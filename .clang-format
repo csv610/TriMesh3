@@ -1,0 +1,14 @@
+BasedOnStyle: Google
+IndentWidth: 8
+UseTab: Always
+ColumnLimit: 120
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Inline
+BreakBeforeBraces: Attach
+SpaceAfterCStyleCast: true
+SpaceBeforeRangeBasedForLoopColon: true
+PointerAlignment: Left
+DerivePointerAlignment: false
+IncludeBlocks: Regroup
+SortIncludes: true

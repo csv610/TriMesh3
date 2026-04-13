@@ -1,0 +1,30 @@
+# Build artifacts
+build/
+bin.*/
+lib.*/
+OBJ.*/
+*.o
+*.d
+*.a
+*.gcno
+*.gcda
+*.gcov
+*.profraw
+*.profdata
+
+# IDE and System files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test outputs
+test_*.obj
+test_*.ply
+test_*.off
+test_*.xf
+test_props.ply
+test_cube.obj
+test_cube.ply
+test_cube.off
