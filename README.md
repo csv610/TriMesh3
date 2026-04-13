@@ -13,6 +13,16 @@ This repository represents a modernization effort focused on porting the origina
 - **Robust Testing**: Implemented an extensive automated unit test suite using `ctest`, achieving high code coverage across core library components.
 - **Code Standards**: Introduced `.clang-format` and updated documentation for professional maintainability.
 
+## What You Can Do
+- **Analyze Geometry**: Compute vertex/face normals, principal curvatures, feature sizes, and bounding boxes.
+- **Clean & Repair**: Remove unused vertices, flip inconsistent faces, and extract connected components.
+- **Process & Filter**: Apply Laplacian (umbrella) or Taubin smoothing, add noise, or erode boundaries.
+- **Transform & Align**: Scale, rotate, and translate meshes, or use **ICP (Iterative Closest Point)** to align scanned data with precision.
+- **Spatial Indexing**: Use the built-in **KD-tree** for ultra-fast nearest-neighbor searches and spatial queries.
+- **Subdivide**: Increase mesh resolution using industry-standard Loop or Butterfly subdivision schemes.
+- **Visualize**: Use the pre-built `mesh_view` utility or link against `gluit` to build your own custom interactive 3D visualization tools.
+- **Convert Formats**: Effortlessly read and write between PLY, OBJ, and OFF formats using a unified I/O layer.
+
 ## Features
 
 - **Mesh Processing**: Normal computation, curvature estimation, subdivision, simplification, and filtering.
