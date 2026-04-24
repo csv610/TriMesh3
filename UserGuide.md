@@ -181,6 +181,143 @@ trimesh::TriMesh::set_dprintf_hook(my_printf);
 trimesh::TriMesh::set_eprintf_hook(my_error_printf);
 ```
 
+### Color Mapping for Visualization
+
+The `colors` vector stores per-vertex RGB colors. Colors are commonly used to visualize scalar fields (curvature, distance, etc.) through color mapping.
+
+```cpp
+mesh->colors.resize(mesh->vertices.size());
+```
+
+#### Assigning Solid Colors
+
+```cpp
+// Assign solid red color to all vertices
+mesh->colors.resize(mesh->vertices.size());
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    mesh->colors[i] = trimesh::Color(1.0f, 0.0f, 0.0f);  // RGB (0-1 range)
+}
+
+// Using Color static methods
+mesh->colors[i] = trimesh::Color::white();
+mesh->colors[i] = trimesh::Color::black();
+mesh->colors[i] = trimesh::Color::gray(0.5f);
+```
+
+#### Color Mapping Strategies
+
+**1. Simple Gradient (Single Value)**
+
+Map a scalar value to a two-color gradient:
+
+```cpp
+float min_val = *std::min_element(mesh->curv1.begin(), mesh->curv1.end());
+float max_val = *std::max_element(mesh->curv1.begin(), mesh->curv1.end());
+
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    float t = (mesh->curv1[i] - min_val) / (max_val - min_val);  // 0 to 1
+    mesh->colors[i] = trimesh::Color(t, 0.5f, 1.0f - t);  // Blue to Red
+}
+```
+
+**2. Diverging Gradient (Positive and Negative)**
+
+For signed values (like mean curvature):
+
+```cpp
+float abs_max = std::max(std::abs(min_val), std::abs(max_val));
+
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    float t = mesh->curv1[i] / abs_max;  // -1 to 1
+    mesh->colors[i] = trimesh::Color(0.5f + 0.5f * t, 0.5f - 0.5f * t, 0.5f);
+    // Blue (negative) -> White (zero) -> Red (positive)
+}
+```
+
+**3. HSV Color Space (Rainbow Gradient)**
+
+Use HSV for smooth rainbow transitions:
+
+```cpp
+float min_c = *std::min_element(mesh->curv1.begin(), mesh->curv1.end());
+float max_c = *std::max_element(mesh->curv1.begin(), mesh->curv1.end());
+
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    float hue = (mesh->curv1[i] - min_c) / (max_c - min_c);  // 0 to 1
+    mesh->colors[i] = trimesh::Color::hsv(hue, 1.0f, 1.0f);
+}
+```
+
+**4. Jet Colormap**
+
+Smooth transition through blue -> cyan -> green -> yellow -> red:
+
+```cpp
+float min_val = *std::min_element(mesh->curv1.begin(), mesh->curv1.end());
+float max_val = *std::max_element(mesh->curv1.begin(), mesh->curv1.end());
+
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    float t = (mesh->curv1[i] - min_val) / (max_val - min_val);
+
+    float r, g, b;
+    if (t < 0.5f) {
+        r = 0.0f; g = 4.0f * t; b = 1.0f;  // Blue to Cyan/Green
+    } else {
+        r = 4.0f * (t - 0.5f); g = 1.0f; b = 1.0f - r;  // Yellow to Red
+    }
+
+    mesh->colors[i] = trimesh::Color(r, g, b);
+}
+```
+
+**5. Custom Curvature Color Map**
+
+Visualize curvature direction with color:
+
+```cpp
+mesh->need_curvatures();
+
+for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+    float k1 = mesh->curv1[i];
+    float k2 = mesh->curv2[i];
+    float mean = 0.5f * (k1 + k2);
+    float gauss = k1 * k2;
+
+    float h = atan2(mean, gauss) / M_PIf + 0.5f;  // Hue based on curvature type
+    float s = std::min(1.0f, std::sqrt(k1*k1 + k2*k2));  // Saturation from magnitude
+    mesh->colors[i] = trimesh::Color::hsv(h, s, 1.0f);
+}
+```
+
+#### Full Example
+
+```cpp
+#include "TriMesh.h"
+#include "Color.h"
+#include <algorithm>
+#include <cmath>
+
+int main() {
+    trimesh::TriMesh *mesh = trimesh::TriMesh::read("input.ply");
+    if (!mesh) return 1;
+
+    mesh->need_curvatures();
+
+    mesh->colors.resize(mesh->vertices.size());
+
+    float min_c = *std::min_element(mesh->curv1.begin(), mesh->curv1.end());
+    float max_c = *std::max_element(mesh->curv1.begin(), mesh->curv1.end());
+
+    for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+        float t = (mesh->curv1[i] - min_c) / (max_c - min_c);
+        mesh->colors[i] = trimesh::Color::hsv(t, 1.0f, 1.0f);
+    }
+
+    mesh->write("colored.ply");
+    return 0;
+}
+```
+
 ## Mesh Algorithms (`TriMesh_algo.h`)
 
 The library provides a comprehensive set of mesh processing algorithms.
