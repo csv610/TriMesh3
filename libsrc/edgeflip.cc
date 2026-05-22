@@ -6,40 +6,38 @@ edgeflip.cc
 Optimally re-triangulate a mesh by doing edge flips
 */
 
+#include <queue>
+
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
-#include <queue>
 using namespace std;
 #define dprintf TriMesh::dprintf
 #define eprintf TriMesh::eprintf
 
-typedef pair<int,int> TriMeshEdge; // (face, edge) pair
+typedef pair<int, int> TriMeshEdge;  // (face, edge) pair
 typedef pair<float, TriMeshEdge> TriMeshEdgeWithBenefit;
-
 
 namespace trimesh {
 
 // Cosine of the maximum angle in triangle (v1,v2,v3)
-static float cosmaxangle(const point &v1, const point &v2, const point &v3)
-{
-	float a = dist(v2,v3);
-	float b = dist(v3,v1);
-	float c = dist(v1,v2);
-	float A = a * (b*b + c*c - a*a);
-	float B = b * (c*c + a*a - b*b);
-	float C = c * (a*a + b*b - c*c);
-	return 0.5f * min(min(A,B),C) / (a*b*c); // min cosine == max angle
+static float cosmaxangle(const point& v1, const point& v2, const point& v3) {
+	float a = dist(v2, v3);
+	float b = dist(v3, v1);
+	float c = dist(v1, v2);
+	float A = a * (b * b + c * c - a * a);
+	float B = b * (c * c + a * a - b * b);
+	float C = c * (a * a + b * b - c * c);
+	return 0.5f * min(min(A, B), C) / (a * b * c);	// min cosine == max angle
 }
-
 
 /*
      v1         v4                      v1         v4
        +-------+                          +-------+
-        \  .    \            ?             \     . \
-         \   .   \          --->            \   .   \
-          \     . \                          \ .     \
-           +-------+                          +-------+
-         v2         v3                      v2         v3
+	\  .    \            ?             \     . \
+	 \   .   \          --->            \   .   \
+	  \     . \                          \ .     \
+	   +-------+                          +-------+
+	 v2         v3                      v2         v3
 
    Given a pair of triangles (v1,v2,v3) and (v1,v3,v4), what is the benefit
    of re-triangulating as (v1,v2,v4) and (v2,v3,v4)?
@@ -49,28 +47,22 @@ static float cosmaxangle(const point &v1, const point &v2, const point &v3)
    diagonal and maximizing minimum angle (Delaunay)).  Note that, unlike
    the Delaunay case, this isn't guaranteed to converge to the global optimum.
 */
-static float flip_benefit(const point &v1, const point &v2,
-                          const point &v3, const point &v4)
-{
-	vec n124 = (v4 - v2) CROSS (v1 - v2);
-	vec n234 = (v3 - v2) CROSS (v4 - v2);
-	if ((n124 DOT n234) <= 0.0f)
-		return 0.0f;
+static float flip_benefit(const point& v1, const point& v2, const point& v3, const point& v4) {
+	vec n124 = cross(v4 - v2, v1 - v2);
+	vec n234 = cross(v3 - v2, v4 - v2);
+	if (dot(n124, n234) <= 0.0f) return 0.0f;
 
-	return max(-cosmaxangle(v1,v2,v3), -cosmaxangle(v1,v3,v4)) -
-	       max(-cosmaxangle(v1,v2,v4), -cosmaxangle(v2,v3,v4));
+	return max(-cosmaxangle(v1, v2, v3), -cosmaxangle(v1, v3, v4)) -
+	       max(-cosmaxangle(v1, v2, v4), -cosmaxangle(v2, v3, v4));
 }
-
 
 // Given a mesh edge defined as a (face, whichedge) pair, figure out whether
 // it is possible and desirable to do an edge flip.  This does some sanity
 // checks, figures out the four vertices involved, then calls the above
 // function to actually compute the benefit.
-static float flip_benefit(const TriMesh *mesh, int f, int e)
-{
+static float flip_benefit(const TriMesh* mesh, int f, int e) {
 	int ae = mesh->across_edge[f][e];
-	if (ae < 0)
-		return 0;
+	if (ae < 0) return 0;
 
 	int v2 = mesh->faces[f][e];
 	int v3 = mesh->faces[f][NEXT_MOD3(e)];
@@ -82,21 +74,18 @@ static float flip_benefit(const TriMesh *mesh, int f, int e)
 		eprintf("ae = %d\n", ae);
 		eprintf("aef = %d %d %d\n", mesh->faces[ae][0], mesh->faces[ae][1], mesh->faces[ae][2]);
 		eprintf("faei3 = %d\n", faei3);
-		eprintf("aeae = %d %d %d\n", mesh->across_edge[ae][0], mesh->across_edge[ae][1], mesh->across_edge[ae][2]);
-		return 0;	// Topological weirdness...
+		eprintf("aeae = %d %d %d\n", mesh->across_edge[ae][0], mesh->across_edge[ae][1],
+			mesh->across_edge[ae][2]);
+		return 0;  // Topological weirdness...
 	}
 	int v4 = mesh->faces[ae][NEXT_MOD3(faei3)];
-	if (v2 == v4)
-		return 0;
-	return flip_benefit(mesh->vertices[v1], mesh->vertices[v2],
-	                    mesh->vertices[v3], mesh->vertices[v4]);
+	if (v2 == v4) return 0;
+	return flip_benefit(mesh->vertices[v1], mesh->vertices[v2], mesh->vertices[v3], mesh->vertices[v4]);
 }
-
 
 // Do an edge flip of edge e on face f, updating the across_edge map.
 // Returns the other face involved in the flip.
-static int edge_flip(TriMesh *mesh, int f1, int e)
-{
+static int edge_flip(TriMesh* mesh, int f1, int e) {
 	int f2 = mesh->across_edge[f1][e];
 
 	int v2 = mesh->faces[f1][e];
@@ -124,10 +113,8 @@ static int edge_flip(TriMesh *mesh, int f1, int e)
 	return f2;
 }
 
-
 // Do as many edge flips as necessary...
-void edgeflip(TriMesh *mesh)
-{
+void edgeflip(TriMesh* mesh) {
 	mesh->need_faces();
 	mesh->tstrips.clear();
 	mesh->need_across_edge();
@@ -141,11 +128,9 @@ void edgeflip(TriMesh *mesh)
 	for (int i = 0; i < nf; i++) {
 		for (int j = 0; j < 3; j++) {
 			float b = flip_benefit(mesh, i, j);
-			if (b > 0.0f)
-				todo.push(make_pair(b, make_pair(i, j)));
+			if (b > 0.0f) todo.push(make_pair(b, make_pair(i, j)));
 		}
 	}
-
 
 	// Process things in order of decreasing benefit
 	while (!todo.empty()) {
@@ -153,24 +138,21 @@ void edgeflip(TriMesh *mesh)
 		int e = todo.top().second.second;
 		todo.pop();
 		// Re-check in case the mesh has changed under us
-		if (flip_benefit(mesh, f, e) <= 0.0f)
-			continue;
+		if (flip_benefit(mesh, f, e) <= 0.0f) continue;
 		// OK, do the edge flip
 		int f2 = edge_flip(mesh, f, e);
 		// Insert new edges into queue, if necessary
 		for (int j = 0; j < 3; j++) {
 			float b = flip_benefit(mesh, f, j);
-			if (b > 0.0f)
-				todo.push(make_pair(b, make_pair(f, j)));
+			if (b > 0.0f) todo.push(make_pair(b, make_pair(f, j)));
 		}
 		for (int j = 0; j < 3; j++) {
 			float b = flip_benefit(mesh, f2, j);
-			if (b > 0.0f)
-				todo.push(make_pair(b, make_pair(f2, j)));
+			if (b > 0.0f) todo.push(make_pair(b, make_pair(f2, j)));
 		}
 	}
 
 	dprintf("Done.\n");
 }
 
-} // namespace trimesh
+}  // namespace trimesh

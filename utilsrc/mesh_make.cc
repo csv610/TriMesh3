@@ -6,35 +6,52 @@ mesh_make.cc
 Create various kinds of meshes for testing...
 */
 
-#include "TriMesh.h"
-#include "TriMesh_algo.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+#include "TriMesh.h"
+#include "TriMesh_algo.h"
 using namespace std;
 using namespace trimesh;
 
 #define ATOF(x) ((float) atof(x))
 
-const char *fixed_shape_names[] = {
-	"tetrahedron", "cube", "octahedron", "dodecahedron", "icosahedron",
-	"truncated_tetrahedron", "cuboctahedron", "truncated_cube",
-	"truncated_octahedron", "rhombicuboctahedron",
-	"truncated_cuboctahedron", "icosidodecahedron",
-	"truncated_dodecahedron", "truncated_icosahedron", "snub_cube",
-	"rhombicosidodecahedron", "truncated_icosidodecahedron",
-	"snub_dodecahedron", "triakis_tetrahedron", "rhombic_dodecahedron",
-	"triakis_octahedron", "tetrakis_hexahedron",
-	"deltoidal_icositetrahedron", "disdyakis_dodecahedron",
-	"rhombic_triacontahedron", "triakis_icosahedron",
-	"pentakis_dodecahedron", "pentagonal_icositetrahedron",
-	"deltoidal_hexecontahedron", "disdyakis_triacontahedron",
-	"pentagonal_hexecontahedron",
+const char* fixed_shape_names[] = {
+    "tetrahedron",
+    "cube",
+    "octahedron",
+    "dodecahedron",
+    "icosahedron",
+    "truncated_tetrahedron",
+    "cuboctahedron",
+    "truncated_cube",
+    "truncated_octahedron",
+    "rhombicuboctahedron",
+    "truncated_cuboctahedron",
+    "icosidodecahedron",
+    "truncated_dodecahedron",
+    "truncated_icosahedron",
+    "snub_cube",
+    "rhombicosidodecahedron",
+    "truncated_icosidodecahedron",
+    "snub_dodecahedron",
+    "triakis_tetrahedron",
+    "rhombic_dodecahedron",
+    "triakis_octahedron",
+    "tetrakis_hexahedron",
+    "deltoidal_icositetrahedron",
+    "disdyakis_dodecahedron",
+    "rhombic_triacontahedron",
+    "triakis_icosahedron",
+    "pentakis_dodecahedron",
+    "pentagonal_icositetrahedron",
+    "deltoidal_hexecontahedron",
+    "disdyakis_triacontahedron",
+    "pentagonal_hexecontahedron",
 };
 
-
-void usage(const char *myname)
-{
+void usage(const char* myname) {
 	fprintf(stderr, "Usage: %s shape outfile\n", myname);
 	fprintf(stderr, "Parameterized shapes:\n");
 	fprintf(stderr, "	plane m [n]	m x n tessellated square (default n = m)\n");
@@ -74,13 +91,11 @@ void usage(const char *myname)
 	exit(1);
 }
 
-int main(int argc, char *argv[])
-{
-	if (argc < 3)
-		usage(argv[0]);
+int main(int argc, char* argv[]) {
+	if (argc < 3) usage(argv[0]);
 
-	TriMesh *mesh = NULL;
-	const char *outfilename = argv[2];
+	TriMesh* mesh = nullptr;
+	const char* outfilename = argv[2];
 
 	if (!strcmp(argv[1], "plane") && argc > 4) {
 		mesh = make_plane(atoi(argv[2]), atoi(argv[3]));
@@ -173,7 +188,7 @@ int main(int argc, char *argv[])
 		mesh = make_fixed_shape(SHAPE_RHOMBIC_TRIACONTAHEDRON);
 		outfilename = argv[2];
 	} else if (!strcmp(argv[1], "sor") && argc > 4) {
-		FILE *f = fopen(argv[3], "r");
+		FILE* f = fopen(argv[3], "r");
 		if (!f) {
 			TriMesh::eprintf("Couldn't open %s\n", argv[3]);
 			exit(1);
@@ -181,9 +196,8 @@ int main(int argc, char *argv[])
 		vector<point> pts;
 		float x, y, z;
 		while (1) {
-			if (fscanf(f, "%f%f%f", &x, &y, &z) != 3)
-				break;
-			pts.push_back(point(x,y,z));
+			if (fscanf(f, "%f%f%f", &x, &y, &z) != 3) break;
+			pts.push_back(point(x, y, z));
 		}
 		fclose(f);
 		if (pts.size() < 2) {
@@ -220,5 +234,4 @@ int main(int argc, char *argv[])
 	} else {
 		usage(argv[0]);
 	}
-
 }

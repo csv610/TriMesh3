@@ -50,7 +50,7 @@ void    GLUI_RadioGroup::draw_group( int translate )
   glMatrixMode(GL_MODELVIEW );
 
   button = (GLUI_RadioButton*) first_child();
-  while( button != NULL ) {
+  while( button != nullptr ) {
     
     if ( translate ) {
       glPushMatrix();
@@ -95,7 +95,7 @@ void    GLUI_RadioGroup::set_selected( int int_val )
   this->int_val = int_val;
 
   button = (GLUI_RadioButton*) first_child();
-  while( button != NULL ) {
+  while( button != nullptr ) {
     if ( int_val == -1 ) {       /*** All buttons in group are deselected ***/
       button->set_int_val(0);
     }

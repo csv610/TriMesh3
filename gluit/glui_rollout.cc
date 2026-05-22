@@ -38,10 +38,10 @@ void    GLUI_Rollout::open( void )
   child_head = collapsed_node.child_head;
   child_tail = collapsed_node.child_tail;
 
-  collapsed_node.child_head = NULL;
-  collapsed_node.child_tail = NULL;
+  collapsed_node.child_head = nullptr;
+  collapsed_node.child_tail = nullptr;
 
-  if ( child_head != NULL ) {
+  if ( child_head != nullptr ) {
     ((GLUI_Control*) child_head)->unhide_internal( true );
   }
 
@@ -65,15 +65,15 @@ void    GLUI_Rollout::close( void )
 
   orig = set_to_glut_window();
 
-  if ( child_head != NULL ) {
+  if ( child_head != nullptr ) {
     ((GLUI_Control*) child_head)->hide_internal( true );
   }
 
   collapsed_node.child_head = first_child();
   collapsed_node.child_tail = last_child();
 
-  child_head = NULL;
-  child_tail = NULL;
+  child_head = nullptr;
+  child_tail = nullptr;
 
   restore_window(orig);
 

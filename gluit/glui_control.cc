@@ -41,7 +41,7 @@ void    GLUI_Control::align( void )
                &col_x_off, &col_y_off);
 
   if ( type == GLUI_CONTROL_COLUMN ) {
-    /*      if ( this->prev() != NULL ) {
+    /*      if ( this->prev() != nullptr ) {
         ((GLUI_Control*)prev())->get_this_column_dims(&col_x, &col_y, &col_w, &col_h, 
         &col_x_off, &col_y_off);
         
@@ -71,7 +71,7 @@ void    GLUI_Control::align( void )
     GLUI_Control *node;
         
     node = (GLUI_Control*) this->first_child();
-    while( node != NULL ) {
+    while( node != nullptr ) {
       if ( node->type == GLUI_CONTROL_COLUMN ) { 
     node->x_abs += delta;
       } 
@@ -94,7 +94,7 @@ void    GLUI_Control::pack_old( int x, int y )
   int            x_margin, y_margin_top, y_margin_bot;
   int            y_top_column;
   int            column_x;
-  GLUI_Column   *curr_column = NULL;
+  GLUI_Column   *curr_column = nullptr;
   this->update_size();
   x_margin     = this->x_off;
   y_margin_top = this->y_off_top;
@@ -110,7 +110,7 @@ void    GLUI_Control::pack_old( int x, int y )
   column_x     = 0;
   /*** Iterate over children, packing them first ***/
   node = (GLUI_Control*) this->first_child();
-  while( node != NULL ) {
+  while( node != nullptr ) {
     if ( node->type == GLUI_CONTROL_PANEL ) { /* Pad some space above panels */
       curr_y += GLUI_ITEMSPACING;
     } 
@@ -141,7 +141,7 @@ void    GLUI_Control::pack_old( int x, int y )
     curr_y  += node->h;
     if ( node->w > max_w ) {
       max_w = node->w;
-      if ( curr_column != NULL )
+      if ( curr_column != nullptr )
     curr_column->w = max_w;
     }
     node = (GLUI_Control*) node->next();
@@ -380,7 +380,7 @@ int          GLUI_Control::char_width( char c )
 void    *GLUI_Control::get_font( void )
 {
   /*** Does this control have its own font? ***/
-  if ( this->font != NULL )
+  if ( this->font != nullptr )
     return this->font;
   
   /*** Does the parent glui have a font? ***/
@@ -536,7 +536,7 @@ void      GLUI_Control::sync_live( int recurse, int draw_it )
   /***  If this control has a live variable, we check its current value
     against the stored value in the control  ***/
 
-  if ( ptr_val != NULL ) {
+  if ( ptr_val != nullptr ) {
     if ( live_type == GLUI_LIVE_NONE OR NOT sync_it ) {
     }
     else if ( live_type == GLUI_LIVE_INT ) {
@@ -623,7 +623,7 @@ void      GLUI_Control::output_live( int update_main_gfx )
   int    i;
   float *fp;
 
-  if ( ptr_val == NULL )
+  if ( ptr_val == nullptr )
     return;
 
   if ( NOT live_inited ) 
@@ -656,7 +656,7 @@ void      GLUI_Control::output_live( int update_main_gfx )
   }
 
   /** Update the main gfx window? **/
-  if ( update_main_gfx AND this->glui != NULL ) {
+  if ( update_main_gfx AND this->glui != nullptr ) {
     this->glui->post_update_main_gfx();
   }
 }
@@ -692,7 +692,7 @@ void    GLUI_Control::get_this_column_dims( int *col_x, int *col_y,
 
   parent_ptr = (GLUI_Control*) parent();
 
-  if ( parent_ptr==NULL )
+  if ( parent_ptr==nullptr )
     return;
 
   parent_h     = parent_ptr->h;
@@ -710,13 +710,13 @@ void    GLUI_Control::get_this_column_dims( int *col_x, int *col_y,
 
     /**   Look for first control in this column   **/
     first = this;
-    while (first->prev() != NULL AND 
+    while (first->prev() != nullptr AND 
        ((GLUI_Control*)first->prev())->type != GLUI_CONTROL_COLUMN )
       first = first->prev();
 
     /**   Look for last control in this column    **/
     last = this;
-    while ( last->next() != NULL AND 
+    while ( last->next() != nullptr AND 
         ((GLUI_Control*)first->next())->type != GLUI_CONTROL_COLUMN )
       last = last->next();
 
@@ -730,7 +730,7 @@ void    GLUI_Control::get_this_column_dims( int *col_x, int *col_y,
     break;
 
       curr = curr->next();
-    } while( curr != NULL );
+    } while( curr != nullptr );
 
     *col_x     = ((GLUI_Control*)first)->x_abs;
     *col_y     = ((GLUI_Control*)first)->y_abs;
@@ -802,7 +802,7 @@ void     GLUI_Control::init_live( void )
   int    i;
   float *fp;
 
-  if ( ptr_val == NULL )
+  if ( ptr_val == nullptr )
     return;
 
   if ( live_type == GLUI_LIVE_NONE ) {
@@ -859,7 +859,7 @@ GLUI_Control::~GLUI_Control()
   /*  printf( "destroying %s\n", this->name );              */
 
   node = (GLUI_Control*) this->first_child();
-  while( node != NULL ) {
+  while( node != nullptr ) {
     /*    printf( "recursively destroying: '%s'\n", node->name );              */
 
     node_tmp = node;
@@ -976,7 +976,7 @@ void  GLUI_Control::set_float_array_val( float *array_ptr )
 {
   int i;
 
-  if ( array_ptr == NULL )
+  if ( array_ptr == nullptr )
     return;
 
   for( i=0; i<float_array_size; i++ ) {
@@ -994,7 +994,7 @@ void  GLUI_Control::get_float_array_val( float *array_ptr )
 {
   int i;
 
-  if ( array_ptr == NULL )
+  if ( array_ptr == nullptr )
     return;
 
   for( i=0; i<float_array_size; i++ ) {
@@ -1026,7 +1026,7 @@ void    GLUI_Control::pack( int x, int y )
   int            x_margin, y_margin_top, y_margin_bot;
   int            y_top_column;
   int            column_x;
-  GLUI_Column   *curr_column = NULL;
+  GLUI_Column   *curr_column = nullptr;
 
   this->update_size();
 
@@ -1050,7 +1050,7 @@ void    GLUI_Control::pack( int x, int y )
   /*** Iterate over children, packing them first ***/
 
   node = (GLUI_Control*) this->first_child();
-  while( node != NULL ) {
+  while( node != nullptr ) {
     if ( node->type == GLUI_CONTROL_PANEL ) { /* Pad some space above panels */
       curr_y += GLUI_ITEMSPACING;
     } 
@@ -1081,13 +1081,13 @@ void    GLUI_Control::pack( int x, int y )
 
     if ( node->w > max_w ) {
       max_w = node->w;
-      if ( curr_column != NULL )
+      if ( curr_column != nullptr )
     curr_column->w = max_w + x_margin;
     }
 
     if ( curr_y > max_y ) {
       max_y = curr_y;
-      if ( curr_column != NULL )
+      if ( curr_column != nullptr )
     curr_column->h = max_y - y_top_column;
     }
 
@@ -1120,7 +1120,7 @@ void    GLUI_Control::pack( int x, int y )
 
     /*** Now we step through the GLUI_Columns, setting the 'h'  ***/
     node = (GLUI_Control*) this->first_child();
-    while( node != NULL ) {
+    while( node != nullptr ) {
       if ( node->type == GLUI_CONTROL_COLUMN ) {
     node->h = this->h - y_margin_bot - y_margin_top;
       }
@@ -1167,20 +1167,20 @@ void         GLUI_Control::hide_internal( int recurse )
   GLUI_Node *node;
 
   node = (GLUI_Node *) this;
-  while( node != NULL ) {
+  while( node != nullptr ) {
     ((GLUI_Control*)node)->hidden = true;
 
-    if ( recurse AND node->first_child() != NULL )  
+    if ( recurse AND node->first_child() != nullptr )  
       ((GLUI_Control*) node->first_child())->hide_internal(true);
       
     node = node->next();
   }
 
   node = this->collapsed_node.first_child();
-  while( node != NULL ) {
+  while( node != nullptr ) {
     ((GLUI_Control*)node)->hidden = true;
 
-    if ( recurse AND node->first_child() != NULL )  
+    if ( recurse AND node->first_child() != nullptr )  
       ((GLUI_Control*) node->first_child())->hide_internal(true);
       
     node = node->next();
@@ -1197,22 +1197,22 @@ void         GLUI_Control::unhide_internal( int recurse )
   GLUI_Node *node;
 
   node = (GLUI_Node *) this;
-  while( node != NULL ) {
+  while( node != nullptr ) {
     /*    printf( "unhide: %s [%d]\n", ((GLUI_Control*)node)->name.string, 
         ((GLUI_Control*)node)->hidden );*/
     ((GLUI_Control*)node)->hidden = false;
 
-    if ( recurse AND node->first_child() != NULL )  
+    if ( recurse AND node->first_child() != nullptr )  
       ((GLUI_Control*) node->first_child())->unhide_internal(true);
       
     node = node->next();
   }
 
   node = this->collapsed_node.first_child();
-  while( node != NULL ) {
+  while( node != nullptr ) {
     ((GLUI_Control*)node)->hidden = false;
 
-    if ( recurse AND node->first_child() != NULL )  
+    if ( recurse AND node->first_child() != nullptr )  
       ((GLUI_Control*) node->first_child())->unhide_internal(true);
       
     node = node->next();

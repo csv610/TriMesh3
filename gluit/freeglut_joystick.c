@@ -206,7 +206,7 @@ static char *fghJoystickWalkUSBdev(int f, char *dev, char *out, int outlen)
   for (a = 1; a < USB_MAX_DEVICES; a++) {
     di.udi_addr = a;
     if (ioctl(f, USB_DEVICEINFO, &di) != 0)
-      return NULL;
+      return nullptr;
     for (i = 0; i < USB_MAX_DEVNAMES; i++)
       if (di.udi_devnames[i][0] &&
           strcmp(di.udi_devnames[i], dev) == 0) {
@@ -220,7 +220,7 @@ static char *fghJoystickWalkUSBdev(int f, char *dev, char *out, int outlen)
         return out;
       }
   }
-  return NULL;
+  return nullptr;
 }
 
 static int fghJoystickFindUSBdev(char *name, char *out, int outlen)
@@ -272,7 +272,7 @@ static int fghJoystickInitializeHID(struct os_specific_s *os,
         return FALSE;
     }
 
-    os->hids = NULL;
+    os->hids = nullptr;
 
 #   ifdef HAVE_USBHID_H
         if( ioctl( os->fd, USB_GET_REPORT_ID, &report_id ) < 0)
@@ -370,7 +370,7 @@ static int fghJoystickInitializeHID(struct os_specific_s *os,
         }
         hid_end_parse( d );
 
-        return os->hids != NULL;
+        return os->hids != nullptr;
 }
 #    endif
 #endif
@@ -519,7 +519,7 @@ static void fghJoystickRawRead( SFG_Joystick* joy, int* buttons, float* axes )
 #endif
 
 #if TARGET_HOST_MAC_OSX
-    if ( buttons != NULL )
+    if ( buttons != nullptr )
     {
         *buttons = 0;
 
@@ -532,7 +532,7 @@ static void fghJoystickRawRead( SFG_Joystick* joy, int* buttons, float* axes )
         }
     }
 
-    if ( axes != NULL )
+    if ( axes != nullptr )
     {
         for ( i = 0; i < joy->num_axes; i++ )
         {
@@ -619,10 +619,10 @@ static void fghJoystickRawRead( SFG_Joystick* joy, int* buttons, float* axes )
             joy->error = GL_TRUE;
             return;
         }
-        if ( buttons != NULL )
+        if ( buttons != nullptr )
             *buttons = ( joy->os->ajs.b1 ? 1 : 0 ) | ( joy->os->ajs.b2 ? 2 : 0 );
 
-        if ( axes != NULL )
+        if ( axes != nullptr )
         {
             axes[0] = (float) joy->os->ajs.x;
             axes[1] = (float) joy->os->ajs.y;
@@ -684,8 +684,8 @@ static void fghJoystickRawRead( SFG_Joystick* joy, int* buttons, float* axes )
         perror( joy->os->fname );
         joy->error = 1;
     }
-    if ( buttons != NULL ) *buttons = joy->os->cache_buttons;
-    if ( axes    != NULL )
+    if ( buttons != nullptr ) *buttons = joy->os->cache_buttons;
+    if ( axes    != nullptr )
         memcpy ( axes, joy->os->cache_axes, sizeof(float) * joy->num_axes );
 #        endif
 #    endif
@@ -740,8 +740,8 @@ static void fghJoystickRawRead( SFG_Joystick* joy, int* buttons, float* axes )
 
             /* use the old values */
 
-            if ( buttons != NULL ) *buttons = joy->tmp_buttons;
-            if ( axes    != NULL )
+            if ( buttons != nullptr ) *buttons = joy->tmp_buttons;
+            if ( axes    != nullptr )
                 memcpy ( axes, joy->tmp_axes, sizeof(float) * joy->num_axes );
 
             return;
@@ -852,7 +852,7 @@ interface references to the static array. We then use the array index
 as the device number when we come to open() the joystick. */
 static int fghJoystickFindDevices ( SFG_Joystick *joy, mach_port_t masterPort )
 {
-    CFMutableDictionaryRef hidMatch = NULL;
+    CFMutableDictionaryRef hidMatch = nullptr;
     IOReturn rv = kIOReturnSuccess;
 
     io_iterator_t hidIterator;
@@ -907,13 +907,13 @@ static CFDictionaryRef fghJoystickGetCFProperties ( SFG_Joystick *joy, io_object
     rv = IORegistryEntryGetParentEntry (ioDev, kIOServicePlane, &parent1);
     if (rv != kIOReturnSuccess) {
         fgWarning ( "error getting device entry parent");
-        return NULL;
+        return nullptr;
     }
 
     rv = IORegistryEntryGetParentEntry (parent1, kIOServicePlane, &parent2);
     if (rv != kIOReturnSuccess) {
         fgWarning ( "error getting device entry parent 2");
-        return NULL;
+        return nullptr;
     }
 #endif
 
@@ -921,7 +921,7 @@ static CFDictionaryRef fghJoystickGetCFProperties ( SFG_Joystick *joy, io_object
         &cfProperties, kCFAllocatorDefault, kNilOptions);
     if (rv != kIOReturnSuccess || !cfProperties) {
         fgWarning ( "error getting device properties");
-        return NULL;
+        return nullptr;
     }
 
     return cfProperties;
@@ -937,7 +937,7 @@ static void fghJoystickElementEnumerator ( SFG_Joystick *joy, void *element, voi
       static_cast<jsJoystick*>(vjs)->parseElement ( (CFDictionaryRef) element );
 }
 
-/** element enumerator function : pass NULL for top-level*/
+/** element enumerator function : pass nullptr for top-level*/
 static void fghJoystickEnumerateElements ( SFG_Joystick *joy, CFTypeRef element )
 {
       FREEGLUT_INTERNAL_ERROR_EXIT( (CFGetTypeID(element) == CFArrayGetTypeID(),
@@ -1224,7 +1224,7 @@ static void fghJoystickOpen( SFG_Joystick* joy )
         fgWarning ( "QI-ing IO plugin to HID Device interface failed" );
 
     ( *plugin )->Release( plugin ); /* don't leak a ref */
-    if( joy->hidDev == NULL )
+    if( joy->hidDev == nullptr )
         return;
 
     /* store the interface in this instance */
@@ -1348,7 +1348,7 @@ static void fghJoystickOpen( SFG_Joystick* joy )
         snprintf( joyfname, sizeof(joyfname), "%s/.joy%drc", getenv( "HOME" ), joy->id );
 
         joyfile = fopen( joyfname, "r" );
-        joy->error =( joyfile == NULL );
+        joy->error =( joyfile == nullptr );
         if( joy->error )
             return;
 
@@ -1460,7 +1460,7 @@ static void fghJoystickOpen( SFG_Joystick* joy )
 
     do
     {
-        fghJoystickRawRead( joy, NULL, joy->center );
+        fghJoystickRawRead( joy, nullptr, joy->center );
         counter++;
     } while( !joy->error &&
              counter < 100 &&
@@ -1663,7 +1663,7 @@ void fgJoystickClose( void )
 #endif
 
             free( fgJoystick[ ident ] );
-            fgJoystick[ ident ] = NULL;
+            fgJoystick[ ident ] = nullptr;
             /* show joystick has been deinitialized */
         }
     }

@@ -188,32 +188,32 @@ static void fghSetCursor ( SFG_Window *window, int cursorID )
 #if !defined(__MINGW64__) && _MSC_VER <= 1200
 #       define MAP_CURSOR(a,b)                                   \
         case a:                                                  \
-            SetCursor( LoadCursor( NULL, b ) );                  \
+            SetCursor( LoadCursor( nullptr, b ) );                  \
             SetClassLong( window->Window.Handle,                 \
                           GCL_HCURSOR,                           \
-                          ( LONG )LoadCursor( NULL, b ) );       \
+                          ( LONG )LoadCursor( nullptr, b ) );       \
         break;
     /* Nuke the cursor AND change it for this window class. */
 #       define ZAP_CURSOR(a,b)                                   \
         case a:                                                  \
-            SetCursor( NULL );                                   \
+            SetCursor( nullptr );                                   \
             SetClassLong( window->Window.Handle,                 \
-                          GCL_HCURSOR, ( LONG )NULL );           \
+                          GCL_HCURSOR, ( LONG )nullptr );           \
         break;
 #else
 #       define MAP_CURSOR(a,b)                                   \
         case a:                                                  \
-            SetCursor( LoadCursor( NULL, b ) );                  \
+            SetCursor( LoadCursor( nullptr, b ) );                  \
             SetClassLongPtr( window->Window.Handle,              \
                           GCLP_HCURSOR,                          \
-                          ( LONG )( LONG_PTR )LoadCursor( NULL, b ) );       \
+                          ( LONG )( LONG_PTR )LoadCursor( nullptr, b ) );       \
         break;
     /* Nuke the cursor AND change it for this window class. */
 #       define ZAP_CURSOR(a,b)                                   \
         case a:                                                  \
-            SetCursor( NULL );                                   \
+            SetCursor( nullptr );                                   \
             SetClassLongPtr( window->Window.Handle,              \
-                          GCLP_HCURSOR, ( LONG )( LONG_PTR )NULL );          \
+                          GCLP_HCURSOR, ( LONG )( LONG_PTR )nullptr );          \
         break;
 #endif
 
@@ -240,7 +240,7 @@ static void fghSetCursor ( SFG_Window *window, int cursorID )
         MAP_CURSOR( GLUT_CURSOR_BOTTOM_RIGHT_CORNER, IDC_SIZENWSE  );
         MAP_CURSOR( GLUT_CURSOR_BOTTOM_LEFT_CORNER,  IDC_SIZENESW  );
         MAP_CURSOR( GLUT_CURSOR_INHERIT,             IDC_ARROW     ); /* XXX ToDo */
-        ZAP_CURSOR( GLUT_CURSOR_NONE,                NULL          );
+        ZAP_CURSOR( GLUT_CURSOR_NONE,                nullptr          );
         MAP_CURSOR( GLUT_CURSOR_FULL_CROSSHAIR,      IDC_CROSS     ); /* XXX ToDo */
 
     default:

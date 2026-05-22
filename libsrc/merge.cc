@@ -6,25 +6,20 @@ merge.cc
 Routines for merging meshes and "sharing" vertices.
 */
 
-
+#include "KDtree.h"
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
-#include "KDtree.h"
 using namespace std;
-
 
 namespace trimesh {
 
 // Find separate mesh vertices that should be "shared": they lie on separate
 // connected components, but they are within "tol" of each other.
-void shared(TriMesh *mesh, float tol)
-{
+void shared(TriMesh* mesh, float tol) {
 	int nv = mesh->vertices.size();
-	if (nv < 2)
-		return;
+	if (nv < 2) return;
 	mesh->need_faces();
-	if (mesh->faces.empty())
-		return;
+	if (mesh->faces.empty()) return;
 	mesh->clear_tstrips();
 	mesh->clear_grid();
 	mesh->need_neighbors();
@@ -39,20 +34,17 @@ void shared(TriMesh *mesh, float tol)
 	// We only merge vertices on boundaries.  Find them.
 	vector<bool> bdy(nv);
 #pragma omp parallel for
-	for (int i = 0; i < nv; i++)
-		bdy[i] = mesh->is_bdy(i);
+	for (int i = 0; i < nv; i++) bdy[i] = mesh->is_bdy(i);
 
 	// KD trees for closest-point acceleration
-	vector<KDtree *> kd_trees(ncomps);
-	vector< vector<const float *> > comp_points(ncomps);
+	vector<KDtree*> kd_trees(ncomps);
+	vector<vector<const float*> > comp_points(ncomps);
 	for (int i = 0; i < nv; i++) {
-		if (!bdy[i] || mesh->adjacentfaces[i].empty())
-			continue;
+		if (!bdy[i] || mesh->adjacentfaces[i].empty()) continue;
 		int i_comp = comps[mesh->adjacentfaces[i][0]];
 		comp_points[i_comp].push_back(&mesh->vertices[i][0]);
 	}
-	for (int i = 0; i < ncomps; i++)
-		kd_trees[i] = new KDtree(comp_points[i]);
+	for (int i = 0; i < ncomps; i++) kd_trees[i] = new KDtree(comp_points[i]);
 
 	// Mapping of which vertex is merged with which other
 	vector<int> remap;
@@ -62,14 +54,11 @@ void shared(TriMesh *mesh, float tol)
 	float tol2 = sqr(tol);
 	for (int i = 0; i < nv; i++) {
 		remap.push_back(i);
-		if (!bdy[i] || mesh->adjacentfaces[i].empty())
-			continue;
+		if (!bdy[i] || mesh->adjacentfaces[i].empty()) continue;
 		int i_comp = comps[mesh->adjacentfaces[i][0]];
 		for (int j = 0; j < i_comp; j++) {
-			const float *match = kd_trees[j]->
-				closest_to_pt(mesh->vertices[i], tol2);
-			if (!match)
-				continue;
+			const float* match = kd_trees[j]->closest_to_pt(mesh->vertices[i], tol2);
+			if (!match) continue;
 			int match_ind = (match - &mesh->vertices[0][0]) / 3;
 			remap[i] = match_ind;
 			break;
@@ -84,14 +73,12 @@ void shared(TriMesh *mesh, float tol)
 
 	// Adjust remapping table to use lowest-numbered vertex in each group
 	for (int i = 0; i < nv; i++) {
-		if (remap[i] == i)
-			continue;
+		if (remap[i] == i) continue;
 		int curr = i, next = remap[curr], lowest = i;
 		while (curr != next) {
 			curr = next;
 			next = remap[curr];
-			if (curr < lowest)
-				lowest = curr;
+			if (curr < lowest) lowest = curr;
 		}
 		curr = i;
 		next = remap[curr];
@@ -116,11 +103,9 @@ void shared(TriMesh *mesh, float tol)
 	remap_verts(mesh, remap);
 }
 
-
 // Join multiple meshes together, possibly sharing vertices within tol.
 // If tol < 0, don't share vertices.
-TriMesh *join(const vector<TriMesh *> &meshes, float tol)
-{
+TriMesh* join(const vector<TriMesh*>& meshes, float tol) {
 	// Pre-allocate storage
 	int out_nv = 0, out_nf = 0;
 	bool have_colors = false, have_confidences = false, have_normals = false;
@@ -130,72 +115,54 @@ TriMesh *join(const vector<TriMesh *> &meshes, float tol)
 		out_nv += meshes[i]->vertices.size();
 		meshes[i]->need_faces();
 		out_nf += meshes[i]->faces.size();
-		if (!meshes[i]->colors.empty())
-			have_colors = true;
-		if (!meshes[i]->confidences.empty())
-			have_confidences = true;
-		if (!meshes[i]->normals.empty())
-			have_normals = true;
-		if (!meshes[i]->tstrips.empty())
-			have_tstrips = true;
+		if (!meshes[i]->colors.empty()) have_colors = true;
+		if (!meshes[i]->confidences.empty()) have_confidences = true;
+		if (!meshes[i]->normals.empty()) have_normals = true;
+		if (!meshes[i]->tstrips.empty()) have_tstrips = true;
 	}
 
-	TriMesh *outmesh = new TriMesh;
+	TriMesh* outmesh = new TriMesh;
 	outmesh->vertices.reserve(out_nv);
 	outmesh->faces.reserve(out_nf);
-	if (have_colors)
-		outmesh->colors.reserve(out_nv);
-	if (have_confidences)
-		outmesh->confidences.reserve(out_nv);
-	if (have_normals)
-		outmesh->normals.reserve(out_nv);
+	if (have_colors) outmesh->colors.reserve(out_nv);
+	if (have_confidences) outmesh->confidences.reserve(out_nv);
+	if (have_normals) outmesh->normals.reserve(out_nv);
 
-	vector<KDtree *> kd_trees;
+	vector<KDtree*> kd_trees;
 	vector<int> remap;
-	if (tol >= 0.0f)
-		remap.resize(out_nv);
+	if (tol >= 0.0f) remap.resize(out_nv);
 	float tol2 = sqr(tol);
 
 	// Now loop over all meshes
 	for (int i = 0; i < nmeshes; i++) {
-		TriMesh *m = meshes[i];
+		TriMesh* m = meshes[i];
 		int nv = m->vertices.size();
 		int onv = outmesh->vertices.size();
 
 		// Vertices and vertex properties
-		outmesh->vertices.insert(outmesh->vertices.end(),
-		                         m->vertices.begin(),
-		                         m->vertices.end());
+		outmesh->vertices.insert(outmesh->vertices.end(), m->vertices.begin(), m->vertices.end());
 
 		if (have_colors && !m->colors.empty()) {
-			outmesh->colors.insert(outmesh->colors.end(),
-			                       m->colors.begin(),
-			                       m->colors.end());
+			outmesh->colors.insert(outmesh->colors.end(), m->colors.begin(), m->colors.end());
 		} else if (have_colors && m->colors.empty()) {
 			outmesh->colors.resize(onv + nv, Color::white());
 		}
 
 		if (have_confidences && !m->confidences.empty()) {
-			outmesh->confidences.insert(outmesh->confidences.end(),
-			                            m->confidences.begin(),
-			                            m->confidences.end());
+			outmesh->confidences.insert(outmesh->confidences.end(), m->confidences.begin(),
+						    m->confidences.end());
 		} else if (have_confidences && m->confidences.empty()) {
 			outmesh->confidences.resize(onv + nv, 1.0f);
 		}
 
 		if (have_normals) {
-			if (m->normals.empty())
-				m->need_normals();
-			outmesh->normals.insert(outmesh->normals.end(),
-						m->normals.begin(),
-						m->normals.end());
+			if (m->normals.empty()) m->need_normals();
+			outmesh->normals.insert(outmesh->normals.end(), m->normals.begin(), m->normals.end());
 		}
 
 		// Append and renumber faces
 		int onf = outmesh->faces.size();
-		outmesh->faces.insert(outmesh->faces.end(),
-		                      m->faces.begin(),
-		                      m->faces.end());
+		outmesh->faces.insert(outmesh->faces.end(), m->faces.begin(), m->faces.end());
 		for (size_t j = onf; j < outmesh->faces.size(); j++) {
 			outmesh->faces[j][0] += onv;
 			outmesh->faces[j][1] += onv;
@@ -203,30 +170,26 @@ TriMesh *join(const vector<TriMesh *> &meshes, float tol)
 		}
 
 		// Share vertices
-		if (tol < 0.0f)
-			continue;
+		if (tol < 0.0f) continue;
 
 		m->need_neighbors();
 		m->need_adjacentfaces();
-		vector<const float *> bdy_pts;
+		vector<const float*> bdy_pts;
 		for (size_t j = 0; j < m->vertices.size(); j++) {
 			remap[onv + j] = onv + j;
-			if (!m->is_bdy(j))
-				continue;
-			const point &p = outmesh->vertices[onv + j];
+			if (!m->is_bdy(j)) continue;
+			const point& p = outmesh->vertices[onv + j];
 			bdy_pts.push_back(&p[0]);
 			for (size_t k = 0; k < kd_trees.size(); k++) {
-				const float *match = kd_trees[k]->closest_to_pt(p, tol2);
-				if (!match)
-					continue;
+				const float* match = kd_trees[k]->closest_to_pt(p, tol2);
+				if (!match) continue;
 				int match_ind = (match - &outmesh->vertices[0][0]) / 3;
 				remap[onv + j] = match_ind;
 				bdy_pts.pop_back();
 				break;
 			}
 		}
-		if (i < nmeshes - 1)
-			kd_trees.push_back(new KDtree(bdy_pts));
+		if (i < nmeshes - 1) kd_trees.push_back(new KDtree(bdy_pts));
 	}
 
 	while (!kd_trees.empty()) {
@@ -234,13 +197,11 @@ TriMesh *join(const vector<TriMesh *> &meshes, float tol)
 		kd_trees.pop_back();
 	}
 
-	if (!remap.empty())
-		remap_verts(outmesh, remap);
+	if (!remap.empty()) remap_verts(outmesh, remap);
 
-	if (have_tstrips)
-		outmesh->need_tstrips();
+	if (have_tstrips) outmesh->need_tstrips();
 
 	return outmesh;
 }
 
-} // namespace trimesh
+}  // namespace trimesh

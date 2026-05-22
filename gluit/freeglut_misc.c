@@ -51,7 +51,7 @@ int FGAPIENTRY glutExtensionSupported( const char* extension )
 
   /* Make sure there is a current window, and thus a current context available */
   FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutExtensionSupported" );
-  freeglut_return_val_if_fail( fgStructure.CurrentWindow != NULL, 0 );
+  freeglut_return_val_if_fail( fgStructure.CurrentWindow != nullptr, 0 );
 
   if (strchr(extension, ' '))
     return 0;
@@ -60,7 +60,7 @@ int FGAPIENTRY glutExtensionSupported( const char* extension )
   /* XXX consider printing a warning to stderr that there's no current
    * rendering context.
    */
-  freeglut_return_val_if_fail( extensions != NULL, 0 );
+  freeglut_return_val_if_fail( extensions != nullptr, 0 );
 
   while (1) {
      const char *p = strstr(extensions, extension);
@@ -177,7 +177,7 @@ void FGAPIENTRY glutForceJoystickFunc( void )
 {
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutForceJoystickFunc" );
 #if !defined(_WIN32_WCE)
-    freeglut_return_if_fail( fgStructure.CurrentWindow != NULL );
+    freeglut_return_if_fail( fgStructure.CurrentWindow != nullptr );
     freeglut_return_if_fail( FETCH_WCB( *( fgStructure.CurrentWindow ), Joystick ) );
     fgJoystickPollWindow( fgStructure.CurrentWindow );
 #endif /* !defined(_WIN32_WCE) */

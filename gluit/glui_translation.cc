@@ -504,7 +504,7 @@ void  GLUI_Translation::set_one_val( float val, int index )
     a single member of the float array (given by 'index') instead of
     outputting the entire array   ****/
     
-  if ( ptr_val == NULL OR NOT live_inited )
+  if ( ptr_val == nullptr OR NOT live_inited )
     return;
  
   fp = (float*) ptr_val;
@@ -512,7 +512,7 @@ void  GLUI_Translation::set_one_val( float val, int index )
   last_live_float_array[index] = float_array_val[index];
 
   /** Update the main gfx window? **/
-  if ( this->glui != NULL ) {
+  if ( this->glui != nullptr ) {
     this->glui->post_update_main_gfx();
   }
 }

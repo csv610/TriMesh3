@@ -10,16 +10,13 @@ Umbrella and Taubin lambda/mu mesh smoothing
 #include "TriMesh_algo.h"
 #define dprintf TriMesh::dprintf
 
-
 namespace trimesh {
 
 // One iteration of umbrella-operator smoothing
-void umbrella(TriMesh *mesh, float stepsize, bool tangent /* = false */)
-{
+void umbrella(TriMesh* mesh, float stepsize, bool tangent /* = false */) {
 	mesh->need_neighbors();
 	mesh->need_adjacentfaces();
-	if (tangent)
-		mesh->need_normals();
+	if (tangent) mesh->need_normals();
 	int nv = mesh->vertices.size();
 	std::vector<vec> disp(nv);
 #pragma omp parallel for
@@ -45,10 +42,8 @@ void umbrella(TriMesh *mesh, float stepsize, bool tangent /* = false */)
 #endif
 		} else {
 			int nn = mesh->neighbors[i].size();
-			if (!nn)
-				continue;
-			for (int j = 0; j < nn; j++)
-				disp[i] += mesh->vertices[mesh->neighbors[i][j]];
+			if (!nn) continue;
+			for (int j = 0; j < nn; j++) disp[i] += mesh->vertices[mesh->neighbors[i][j]];
 			disp[i] /= nn;
 			disp[i] -= mesh->vertices[i];
 		}
@@ -56,24 +51,20 @@ void umbrella(TriMesh *mesh, float stepsize, bool tangent /* = false */)
 	if (tangent) {
 #pragma omp parallel for
 		for (int i = 0; i < nv; i++) {
-			const vec &norm = mesh->normals[i];
-			mesh->vertices[i] += stepsize * (disp[i] -
-				norm * (disp[i] DOT norm));
+			const vec& norm = mesh->normals[i];
+			mesh->vertices[i] += stepsize * (disp[i] - norm * dot(disp[i], norm));
 		}
 	} else {
 #pragma omp parallel for
-		for (int i = 0; i < nv; i++)
-			mesh->vertices[i] += stepsize * disp[i];
+		for (int i = 0; i < nv; i++) mesh->vertices[i] += stepsize * disp[i];
 	}
 
-	mesh->bbox.valid = false;
+	mesh->invalidate_bbox();
 	mesh->bsphere.valid = false;
 }
 
-
 // Several iterations of Taubin lambda/mu
-void lmsmooth(TriMesh *mesh, int niters)
-{
+void lmsmooth(TriMesh* mesh, int niters) {
 	mesh->need_neighbors();
 	mesh->need_adjacentfaces();
 	dprintf("Smoothing mesh... ");
@@ -83,14 +74,12 @@ void lmsmooth(TriMesh *mesh, int niters)
 	}
 	dprintf("Done.\n");
 
-	mesh->bbox.valid = false;
+	mesh->invalidate_bbox();
 	mesh->bsphere.valid = false;
 }
 
-
 // One iteration of umbrella-operator smoothing on the normals
-void numbrella(TriMesh *mesh, float stepsize)
-{
+void numbrella(TriMesh* mesh, float stepsize) {
 	mesh->need_neighbors();
 	mesh->need_normals();
 	int nv = mesh->normals.size();
@@ -98,10 +87,8 @@ void numbrella(TriMesh *mesh, float stepsize)
 #pragma omp parallel for
 	for (int i = 0; i < nv; i++) {
 		int nn = mesh->neighbors[i].size();
-		if (!nn)
-			continue;
-		for (int j = 0; j < nn; j++)
-			disp[i] += mesh->normals[mesh->neighbors[i][j]];
+		if (!nn) continue;
+		for (int j = 0; j < nn; j++) disp[i] += mesh->normals[mesh->neighbors[i][j]];
 		disp[i] /= nn;
 		disp[i] -= mesh->normals[i];
 	}
@@ -113,4 +100,4 @@ void numbrella(TriMesh *mesh, float stepsize)
 	}
 }
 
-} // namespace trimesh
+}  // namespace trimesh

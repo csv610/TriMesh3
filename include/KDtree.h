@@ -19,37 +19,38 @@ namespace trimesh {
 using ::std::size_t;
 
 class KDtree {
-private:
+    private:
 	struct Node;
 	struct NodeStorageBlock;
 
-	Node *root;
-	NodeStorageBlock *storage;
+	Node* root;
+	NodeStorageBlock* storage;
 
-	void build(const float *ptlist, size_t n);
-	void build(const float **pts, size_t n);
+	void build(const float* ptlist, size_t n);
+	void build(const float** pts, size_t n);
 
-public:
+    public:
 	// Compatibility function for closest-compatible-point searches
-	struct CompatFunc
-	{
-		virtual bool operator () (const float *p) const = 0;
+	struct CompatFunc {
+		virtual bool operator()(const float* p) const = 0;
 		virtual ~CompatFunc() {}  // To make the compiler shut up
 	};
 
 	// Constructors from an array or vector of points
-	KDtree(const float *ptlist, size_t n) : root(NULL), storage(NULL)
-		{ build(ptlist, n); }
+	KDtree(const float* ptlist, size_t n) : root(nullptr), storage(nullptr) { build(ptlist, n); }
 
-	template <class T> KDtree(const ::std::vector<T> &v) : root(NULL), storage(NULL)
-		{ build((const float *) &v[0], v.size()); }
+	template <class T>
+	KDtree(const ::std::vector<T>& v) : root(nullptr), storage(nullptr) {
+		build((const float*) &v[0], v.size());
+	}
 
 	// Constructors from an array or vector of pointers to points
-	KDtree(const float **pts, size_t n) : root(NULL), storage(NULL)
-		{ build(pts, n); }
+	KDtree(const float** pts, size_t n) : root(nullptr), storage(nullptr) { build(pts, n); }
 
-	template <class T> KDtree(::std::vector<T *> &pts) : root(NULL), storage(NULL)
-		{ build((const float **) &pts[0], pts.size()); }
+	template <class T>
+	KDtree(::std::vector<T*>& pts) : root(nullptr), storage(nullptr) {
+		build((const float**) &pts[0], pts.size());
+	}
 
 	// Destructor - frees the whole tree
 	~KDtree();
@@ -58,50 +59,37 @@ public:
 	// provided it's within sqrt(maxdist2) and is compatible.
 	// If an approximation epsilon is provided, the queries will
 	// return a point within a factor of (1+eps) of the closest.
-	const float *closest_to_pt(const float *p,
-	                           float maxdist2 = 0.0f,
-	                           const CompatFunc *iscompat = NULL,
+	const float* closest_to_pt(const float* p, float maxdist2 = 0.0f, const CompatFunc* iscompat = nullptr,
 				   float approx_eps = 0.0f) const;
 
 	// Shorthand with approx_eps but no iscompat
-	const float *closest_to_pt(const float *p,
-	                           float maxdist2,
-				   float approx_eps) const
-		{ return closest_to_pt(p, maxdist2, NULL, approx_eps); }
-
+	const float* closest_to_pt(const float* p, float maxdist2, float approx_eps) const {
+		return closest_to_pt(p, maxdist2, nullptr, approx_eps);
+	}
 
 	// Returns closest point to a ray through p in direction dir
-	const float *closest_to_ray(const float *p, const float *dir,
-	                            float maxdist2 = 0.0f,
-	                            const CompatFunc *iscompat = NULL,
-				    float approx_eps = 0.0f) const;
+	const float* closest_to_ray(const float* p, const float* dir, float maxdist2 = 0.0f,
+				    const CompatFunc* iscompat = nullptr, float approx_eps = 0.0f) const;
 
 	// Shorthand with approx_eps but no iscompat
-	const float *closest_to_ray(const float *p, const float *dir,
-	                            float maxdist2,
-				    float approx_eps) const
-		{ return closest_to_ray(p, dir, maxdist2, NULL, approx_eps); }
+	const float* closest_to_ray(const float* p, const float* dir, float maxdist2, float approx_eps) const {
+		return closest_to_ray(p, dir, maxdist2, nullptr, approx_eps);
+	}
 
 	// Find the k nearest neighbors to p, filling in knn array
-	void find_k_closest_to_pt(::std::vector<const float *> &knn,
-	                          int k,
-	                          const float *p,
-	                          float maxdist2 = 0.0f,
-	                          const CompatFunc *iscompat = NULL,
-				  float approx_eps = 0.0f) const;
+	void find_k_closest_to_pt(::std::vector<const float*>& knn, int k, const float* p, float maxdist2 = 0.0f,
+				  const CompatFunc* iscompat = nullptr, float approx_eps = 0.0f) const;
 
 	// Shorthand with approx_eps but no iscompat
-	void find_k_closest_to_pt(::std::vector<const float *> &knn,
-	                          int k,
-	                          const float *p,
-	                          float maxdist2,
-				  float approx_eps) const
-		{ return find_k_closest_to_pt(knn, k, p, maxdist2, NULL, approx_eps); }
+	void find_k_closest_to_pt(::std::vector<const float*>& knn, int k, const float* p, float maxdist2,
+				  float approx_eps) const {
+		return find_k_closest_to_pt(knn, k, p, maxdist2, nullptr, approx_eps);
+	}
 
 	// Is there a point within a given distance of a query?
-	bool exists_pt_within(const float *p, float maxdist) const;
+	bool exists_pt_within(const float* p, float maxdist) const;
 };
 
-} // namespace trimesh
+}  // namespace trimesh
 
 #endif

@@ -259,7 +259,7 @@ void    GLUI_Rotation::draw_ball( float radius )
   if ( NOT can_draw() )
     return;
 
-  if (quadObj == NULL)  quadObj = gluNewQuadric();
+  if (quadObj == nullptr)  quadObj = gluNewQuadric();
   if (quadObj) {
     gluQuadricDrawStyle(quadObj, GLU_FILL);
     gluQuadricNormals(quadObj, GLU_SMOOTH);
@@ -380,7 +380,7 @@ GLUI_Rotation::GLUI_Rotation( void )
   can_activate        = true;
   live_type           = GLUI_LIVE_FLOAT_ARRAY;
   float_array_size    = 16;
-  quadObj             = NULL;
+  quadObj             = nullptr;
   alignment           = GLUI_ALIGN_CENTER;
   can_spin            = false;
   spinning            = false;

@@ -33,7 +33,7 @@ void  GLUI_Column::draw( int x, int y )
   if ( int_val == 1 ) {  /* Draw a vertical bar */
     orig = set_to_glut_window();
 
-    if ( parent() != NULL ) {
+    if ( parent() != nullptr ) {
       get_this_column_dims(&panel_x, &panel_y, &panel_w, &panel_h, 
                &panel_x_off, &panel_y_off);
 

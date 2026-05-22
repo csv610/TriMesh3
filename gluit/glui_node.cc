@@ -25,7 +25,7 @@
 
 GLUI_Node   *GLUI_Node::first_sibling( void )
 {
-  if ( parent_node == NULL )  
+  if ( parent_node == nullptr )  
     return this;           /* root node has no siblings */
   else
     return parent_node->child_head;
@@ -55,7 +55,7 @@ GLUI_Node    *GLUI_Node::prev( void )
 
 GLUI_Node   *GLUI_Node::last_sibling( void )
 {
-  if ( parent_node == NULL )
+  if ( parent_node == nullptr )
     return this;            /* root node has no siblings */
   else
     return parent_node->child_tail;
@@ -67,7 +67,7 @@ GLUI_Node   *GLUI_Node::last_sibling( void )
 
 void   GLUI_Node::link_this_to_parent_last( GLUI_Node *new_parent )
 {
-  if ( new_parent->child_tail == NULL ) {   /* parent has no children */
+  if ( new_parent->child_tail == nullptr ) {   /* parent has no children */
     new_parent->child_head = this;
     new_parent->child_tail = this;
     this->parent_node      = new_parent;
@@ -87,7 +87,7 @@ void   GLUI_Node::link_this_to_parent_last( GLUI_Node *new_parent )
 
 void   GLUI_Node::link_this_to_parent_first( GLUI_Node *new_parent )
 {
-  if ( new_parent->child_head == NULL ) {   /* parent has no children */
+  if ( new_parent->child_head == nullptr ) {   /* parent has no children */
     new_parent->child_head               = this;
     new_parent->child_tail               = this;
     this->parent_node                    = new_parent;
@@ -104,12 +104,12 @@ void   GLUI_Node::link_this_to_parent_first( GLUI_Node *new_parent )
 
 void   GLUI_Node::link_this_to_sibling_next( GLUI_Node *sibling )
 {
-  if ( sibling->next_sibling == NULL ) {    /* node has no next sibling */
+  if ( sibling->next_sibling == nullptr ) {    /* node has no next sibling */
     sibling->next_sibling  = this;
     this->prev_sibling     = sibling;
 
     /* This was the parent's last child, so update that as well */
-    if ( sibling->parent_node  != NULL ) {
+    if ( sibling->parent_node  != nullptr ) {
       sibling->parent_node->child_tail = this;
     }
   }
@@ -128,12 +128,12 @@ void   GLUI_Node::link_this_to_sibling_next( GLUI_Node *sibling )
 
 void   GLUI_Node::link_this_to_sibling_prev( GLUI_Node *sibling )
 {
-  if ( sibling->prev_sibling == NULL ) {    /* node has no prev sibling */
+  if ( sibling->prev_sibling == nullptr ) {    /* node has no prev sibling */
     sibling->prev_sibling  = this;
     this->next_sibling     = sibling;
 
     /* This was the parent's first child, so update that as well */
-    if ( sibling->parent_node  != NULL ) {
+    if ( sibling->parent_node  != nullptr ) {
       sibling->parent_node->child_head = this;
     }
   }
@@ -152,7 +152,7 @@ void   GLUI_Node::link_this_to_sibling_prev( GLUI_Node *sibling )
 void   GLUI_Node::unlink( void )
 {
   /* Unlink from prev sibling */
-  if ( this->prev_sibling != NULL ) {
+  if ( this->prev_sibling != nullptr ) {
     this->prev_sibling->next_sibling = this->next_sibling;
   }
   else {                 /* No prev sibling: this was parent's first child */
@@ -160,16 +160,16 @@ void   GLUI_Node::unlink( void )
   }
 
   /* Unlink from next sibling */
-  if ( this->next_sibling != NULL ) {
+  if ( this->next_sibling != nullptr ) {
     this->next_sibling->prev_sibling = this->prev_sibling;
   }
   else {                /* No next sibling: this was parent's last child */
     this->parent_node->child_tail = this->prev_sibling;
   }
 
-  this->parent_node  = NULL;
-  this->next_sibling = NULL;
-  this->prev_sibling = NULL;
-  this->child_head   = NULL;
-  this->child_tail   = NULL;
+  this->parent_node  = nullptr;
+  this->next_sibling = nullptr;
+  this->prev_sibling = nullptr;
+  this->child_head   = nullptr;
+  this->child_tail   = nullptr;
 }

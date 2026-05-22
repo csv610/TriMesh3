@@ -71,18 +71,18 @@ SFG_State fgState = { { -1, -1, GL_FALSE },  /* Position */
                       0,                     /* SwapCount */
                       0,                     /* SwapTime */
                       0,                     /* Time */
-                      { NULL, NULL },         /* Timers */
-                      { NULL, NULL },         /* FreeTimers */
-                      NULL,                   /* IdleCallback */
+                      { nullptr, nullptr },         /* Timers */
+                      { nullptr, nullptr },         /* FreeTimers */
+                      nullptr,                   /* IdleCallback */
                       0,                      /* ActiveMenus */
-                      NULL,                   /* MenuStateCallback */
-                      NULL,                   /* MenuStatusCallback */
+                      nullptr,                   /* MenuStateCallback */
+                      nullptr,                   /* MenuStatusCallback */
                       { -1, -1, GL_TRUE },    /* GameModeSize */
                       -1,                     /* GameModeDepth */
                       -1,                     /* GameModeRefresh */
                       GLUT_ACTION_EXIT,       /* ActionOnWindowClose */
                       GLUT_EXEC_STATE_INIT,   /* ExecState */
-                      NULL,                   /* ProgramName */
+                      nullptr,                   /* ProgramName */
                       GL_FALSE,               /* JoysticksInitialised */
                       0,                      /* NumActiveJoysticks */
                       GL_FALSE,               /* InputDevsInitialised */
@@ -94,8 +94,8 @@ SFG_State fgState = { { -1, -1, GL_FALSE },  /* Position */
                       0,                      /* MinorVersion */
                       0,                      /* ContextFlags */
                       0,                      /* ContextProfile */
-                      NULL,                   /* ErrorFunc */
-                      NULL                    /* WarningFunc */
+                      nullptr,                   /* ErrorFunc */
+                      nullptr                    /* WarningFunc */
 };
 
 
@@ -247,10 +247,10 @@ static void fghInitialize( const char* displayName )
 #if TARGET_HOST_POSIX_X11
     fgDisplay.Display = XOpenDisplay( displayName );
 
-    if( fgDisplay.Display == NULL )
+    if( fgDisplay.Display == nullptr )
         fgError( "failed to open display '%s'", XDisplayName( displayName ) );
 
-    if( !glXQueryExtension( fgDisplay.Display, NULL, NULL ) )
+    if( !glXQueryExtension( fgDisplay.Display, nullptr, nullptr ) )
         fgError( "OpenGL GLX extension not supported by display '%s'",
             XDisplayName( displayName ) );
 
@@ -314,7 +314,7 @@ static void fghInitialize( const char* displayName )
     ATOM atom;
 
     /* What we need to do is to initialize the fgDisplay global structure here. */
-    fgDisplay.Instance = GetModuleHandle( NULL );
+    fgDisplay.Instance = GetModuleHandle( nullptr );
     fgDisplay.DisplayName= displayName ? strdup(displayName) : 0 ;
     atom = GetClassInfo( fgDisplay.Instance, _T("FREEGLUT"), &wc );
 
@@ -341,12 +341,12 @@ static void fghInitialize( const char* displayName )
 #else
         wc.style          = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
         if (!wc.hIcon)
-          wc.hIcon        = LoadIcon( NULL, IDI_WINLOGO );
+          wc.hIcon        = LoadIcon( nullptr, IDI_WINLOGO );
 #endif
 
-        wc.hCursor        = LoadCursor( NULL, IDC_ARROW );
-        wc.hbrBackground  = NULL;
-        wc.lpszMenuName   = NULL;
+        wc.hCursor        = LoadCursor( nullptr, IDC_ARROW );
+        wc.hbrBackground  = nullptr;
+        wc.lpszMenuName   = nullptr;
         wc.lpszClassName  = _T("FREEGLUT");
 
         /* Register the window class */
@@ -430,7 +430,7 @@ void fgDeinitialize( void )
         glXDestroyContext( fgDisplay.Display, fgStructure.MenuContext->MContext );
 #endif
         free( fgStructure.MenuContext );
-        fgStructure.MenuContext = NULL;
+        fgStructure.MenuContext = nullptr;
     }
 
     fgDestroyStructure( );
@@ -495,9 +495,9 @@ void fgDeinitialize( void )
     fgListInit( &fgState.Timers );
     fgListInit( &fgState.FreeTimers );
 
-    fgState.IdleCallback = NULL;
-    fgState.MenuStateCallback = ( FGCBMenuState )NULL;
-    fgState.MenuStatusCallback = ( FGCBMenuStatus )NULL;
+    fgState.IdleCallback = nullptr;
+    fgState.MenuStateCallback = ( FGCBMenuState )nullptr;
+    fgState.MenuStatusCallback = ( FGCBMenuStatus )nullptr;
 
     fgState.SwapCount   = 0;
     fgState.SwapTime    = 0;
@@ -506,7 +506,7 @@ void fgDeinitialize( void )
     if( fgState.ProgramName )
     {
         free( fgState.ProgramName );
-        fgState.ProgramName = NULL;
+        fgState.ProgramName = nullptr;
     }
 
 #if TARGET_HOST_POSIX_X11
@@ -527,7 +527,7 @@ void fgDeinitialize( void )
     if( fgDisplay.DisplayName )
     {
         free( fgDisplay.DisplayName );
-        fgDisplay.DisplayName = NULL;
+        fgDisplay.DisplayName = nullptr;
     }
 
     /* Reset the timer granularity */
@@ -630,7 +630,7 @@ static int XParseGeometry (
     int tempX = 0, tempY = 0;
     char *nextCharacter;
 
-    if ( (string == NULL) || (*string == '\0'))
+    if ( (string == nullptr) || (*string == '\0'))
       return mask;
     if (*string == '=')
         string++;  /* ignore possible '=' at beg of geometry spec */
@@ -717,8 +717,8 @@ static int XParseGeometry (
  */
 void FGAPIENTRY glutInit( int* pargc, char** argv )
 {
-    char* displayName = NULL;
-    char* geometry = NULL;
+    char* displayName = nullptr;
+    char* geometry = nullptr;
     int i, j, argc = *pargc;
 
     if( fgState.Initialised )
@@ -765,8 +765,8 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
 
             displayName = argv[ i ];
 
-            argv[ i - 1 ] = NULL;
-            argv[ i     ] = NULL;
+            argv[ i - 1 ] = nullptr;
+            argv[ i     ] = nullptr;
             ( *pargc ) -= 2;
         }
         else if( strcmp( argv[ i ], "-geometry" ) == 0 )
@@ -777,8 +777,8 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
 
             geometry = argv[ i ];
 
-            argv[ i - 1 ] = NULL;
-            argv[ i     ] = NULL;
+            argv[ i - 1 ] = nullptr;
+            argv[ i     ] = nullptr;
             ( *pargc ) -= 2;
         }
         else if( strcmp( argv[ i ], "-direct" ) == 0)
@@ -788,7 +788,7 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
                     "cannot be both specified" );
 
             fgState.DirectContext = GLUT_FORCE_DIRECT_CONTEXT;
-            argv[ i ] = NULL;
+            argv[ i ] = nullptr;
             ( *pargc )--;
         }
         else if( strcmp( argv[ i ], "-indirect" ) == 0 )
@@ -798,25 +798,25 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
                     "cannot be both specified" );
 
             fgState.DirectContext = GLUT_FORCE_INDIRECT_CONTEXT;
-            argv[ i ] = NULL;
+            argv[ i ] = nullptr;
             (*pargc)--;
         }
         else if( strcmp( argv[ i ], "-iconic" ) == 0 )
         {
             fgState.ForceIconic = GL_TRUE;
-            argv[ i ] = NULL;
+            argv[ i ] = nullptr;
             ( *pargc )--;
         }
         else if( strcmp( argv[ i ], "-gldebug" ) == 0 )
         {
             fgState.GLDebugSwitch = GL_TRUE;
-            argv[ i ] = NULL;
+            argv[ i ] = nullptr;
             ( *pargc )--;
         }
         else if( strcmp( argv[ i ], "-sync" ) == 0 )
         {
             fgState.XSyncSwitch = GL_TRUE;
-            argv[ i ] = NULL;
+            argv[ i ] = nullptr;
             ( *pargc )--;
         }
     }
@@ -825,7 +825,7 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
     for( i = j = 1; i < *pargc; i++, j++ )
     {
         /* Guaranteed to end because there are "*pargc" arguments left */
-        while ( argv[ j ] == NULL )
+        while ( argv[ j ] == nullptr )
             j++;
         if ( i != j )
             argv[ i ] = argv[ j ];
@@ -872,7 +872,7 @@ void FGAPIENTRY glutInit( int* pargc, char** argv )
 }
 
 #if TARGET_HOST_MS_WINDOWS
-void (__cdecl *__glutExitFunc)( int return_value ) = NULL;
+void (__cdecl *__glutExitFunc)( int return_value ) = nullptr;
 
 void FGAPIENTRY __glutInitWithExit( int *pargc, char **argv, void (__cdecl *exit_function)(int) )
 {
@@ -1133,7 +1133,7 @@ void FGAPIENTRY glutInitDisplayString( const char* displayMode )
             break ;
         }
 
-        token = strtok ( NULL, " \t" );
+        token = strtok ( nullptr, " \t" );
     }
 
     free ( buffer );

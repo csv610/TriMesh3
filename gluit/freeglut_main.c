@@ -48,8 +48,8 @@ typedef struct GXKeyList GXKeyList;
 typedef struct GXKeyList (*GXGETDEFAULTKEYS)(int);
 typedef int (*GXOPENINPUT)();
 
-GXGETDEFAULTKEYS GXGetDefaultKeys_ = NULL;
-GXOPENINPUT GXOpenInput_ = NULL;
+GXGETDEFAULTKEYS GXGetDefaultKeys_ = nullptr;
+GXOPENINPUT GXOpenInput_ = nullptr;
 
 struct GXKeyList gxKeyList;
 
@@ -111,7 +111,7 @@ static void fghReshapeWindow ( SFG_Window *window, int width, int height )
 {
     SFG_Window *current_window = fgStructure.CurrentWindow;
 
-    freeglut_return_if_fail( window != NULL );
+    freeglut_return_if_fail( window != nullptr );
 
 #if TARGET_HOST_POSIX_X11
 
@@ -146,7 +146,7 @@ static void fghReshapeWindow ( SFG_Window *window, int width, int height )
         windowRect.right    = windowRect.left+width;
         windowRect.bottom   = windowRect.top+height;
 
-        if (window->Parent == NULL)
+        if (window->Parent == nullptr)
             /* get the window rect from this to feed to SetWindowPos, correct for window decorations */
             fghComputeWindowRectFromClientArea_QueryWindow(&windowRect,window,TRUE);
         else
@@ -249,7 +249,7 @@ static void fghcbDisplayWindow( SFG_Window *window,
 #elif TARGET_HOST_MS_WINDOWS
 
         RedrawWindow(
-            window->Window.Handle, NULL, NULL,
+            window->Window.Handle, nullptr, nullptr,
             RDW_NOERASE | RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW
         );
 #endif
@@ -266,7 +266,7 @@ static void fghDisplayAll( void )
     SFG_Enumerator enumerator;
 
     enumerator.found = GL_FALSE;
-    enumerator.data  =  NULL;
+    enumerator.data  =  nullptr;
 
     fgEnumWindows( fghcbDisplayWindow, &enumerator );
 }
@@ -299,7 +299,7 @@ static void fghCheckJoystickPolls( void )
     SFG_Enumerator enumerator;
 
     enumerator.found = GL_FALSE;
-    enumerator.data  =  NULL;
+    enumerator.data  =  nullptr;
 
     fgEnumWindows( fghcbCheckJoystickPolls, &enumerator );
 }
@@ -349,7 +349,7 @@ unsigned long fgSystemTime(void) {
     return now.tv_nsec/1000000 + now.tv_sec*1000;
 #   elif HAVE_GETTIMEOFDAY
     struct timeval now;
-    gettimeofday( &now, NULL );
+    gettimeofday( &now, nullptr );
     return now.tv_usec/1000 + now.tv_sec*1000;
 #   endif
 #endif
@@ -452,7 +452,7 @@ static int fghHaveJoystick( void )
     SFG_Enumerator enumerator;
 
     enumerator.found = GL_FALSE;
-    enumerator.data = NULL;
+    enumerator.data = nullptr;
     fgEnumWindows( fghCheckJoystickCallback, &enumerator );
     return !!enumerator.data;
 }
@@ -470,7 +470,7 @@ static int fghHavePendingRedisplays (void)
     SFG_Enumerator enumerator;
 
     enumerator.found = GL_FALSE;
-    enumerator.data = NULL;
+    enumerator.data = nullptr;
     fgEnumWindows( fghHavePendingRedisplaysCallback, &enumerator );
     return !!enumerator.data;
 }
@@ -528,7 +528,7 @@ static void fghSleepForEvents( void )
         FD_SET( socket, &fdset );
         wait.tv_sec = msec / 1000;
         wait.tv_usec = (msec % 1000) * 1000;
-        err = select( socket+1, &fdset, NULL, NULL, &wait );
+        err = select( socket+1, &fdset, nullptr, nullptr, &wait );
 
 #ifdef HAVE_ERRNO_H
         if( ( -1 == err ) && ( errno != EINTR ) )
@@ -536,7 +536,7 @@ static void fghSleepForEvents( void )
 #endif
     }
 #elif TARGET_HOST_MS_WINDOWS
-    MsgWaitForMultipleObjects( 0, NULL, FALSE, msec, QS_ALLINPUT );
+    MsgWaitForMultipleObjects( 0, nullptr, FALSE, msec, QS_ALLINPUT );
 #endif
 }
 
@@ -1018,7 +1018,7 @@ void FGAPIENTRY glutMainLoopEvent( void )
     /* This code was repeated constantly, so here it goes into a definition: */
 #define GETWINDOW(a)                             \
     window = fgWindowByHandle( event.a.window ); \
-    if( window == NULL )                         \
+    if( window == nullptr )                         \
         break;
 
 #define GETMOUSE(a)                              \
@@ -1501,9 +1501,9 @@ void FGAPIENTRY glutMainLoopEvent( void )
 
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutMainLoopEvent" );
 
-    while( PeekMessage( &stMsg, NULL, 0, 0, PM_NOREMOVE ) )
+    while( PeekMessage( &stMsg, nullptr, 0, 0, PM_NOREMOVE ) )
     {
-        if( GetMessage( &stMsg, NULL, 0, 0 ) == 0 )
+        if( GetMessage( &stMsg, nullptr, 0, 0 ) == 0 )
         {
             if( fgState.ActionOnWindowClose == GLUT_ACTION_EXIT )
             {
@@ -1646,7 +1646,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     static unsigned char lControl = 0, rControl = 0, lShift = 0,
                          rShift = 0, lAlt = 0, rAlt = 0;
 
-    SFG_Window* window, *child_window = NULL;
+    SFG_Window* window, *child_window = nullptr;
     PAINTSTRUCT ps;
     LRESULT lRet = 1;
 
@@ -1654,7 +1654,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 
     window = fgWindowByHandle( hWnd );
 
-    if ( ( window == NULL ) && ( uMsg != WM_CREATE ) )
+    if ( ( window == nullptr ) && ( uMsg != WM_CREATE ) )
       return DefWindowProc( hWnd, uMsg, wParam, lParam );
 
     /* printf ( "Window %3d message <%04x> %12d %12d\n", window?window->ID:0,
@@ -1674,7 +1674,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         GetCursorPos( &mouse_pos );
         ScreenToClient( window->Window.Handle, &mouse_pos );
         hwnd = ChildWindowFromPoint(window->Window.Handle, mouse_pos);
-        if (hwnd)   /* can be NULL if mouse outside parent by the time we get here */
+        if (hwnd)   /* can be nullptr if mouse outside parent by the time we get here */
         {
             temp_window = fgWindowByHandle(hwnd);
             if (temp_window && temp_window->Parent)    /* Verify we got a child window */
@@ -1806,7 +1806,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_CREATE:
         /* The window structure is passed as the creation structure parameter... */
         window = (SFG_Window *) (((LPCREATESTRUCT) lParam)->lpCreateParams);
-        FREEGLUT_INTERNAL_ERROR_EXIT ( ( window != NULL ), "Cannot create window",
+        FREEGLUT_INTERNAL_ERROR_EXIT ( ( window != nullptr ), "Cannot create window",
                                        "fgWindowProc" );
 
         window->Window.Handle = hWnd;
@@ -1977,7 +1977,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     case WM_PAINT:
         /* Turn on the visibility in case it was turned off somehow */
         window->State.Visible = GL_TRUE;
-        InvalidateRect( hWnd, NULL, GL_FALSE ); /* Make sure whole window is repainted. Bit of a hack, but a safe one from what google turns up... */
+        InvalidateRect( hWnd, nullptr, GL_FALSE ); /* Make sure whole window is repainted. Bit of a hack, but a safe one from what google turns up... */
         BeginPaint( hWnd, &ps );
         fghRedrawWindow( window );
         EndPaint( hWnd, &ps );

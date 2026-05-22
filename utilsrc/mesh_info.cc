@@ -9,18 +9,18 @@ mesh_info.cc
 Query various information about meshes
 */
 
-#include "TriMesh.h"
-#include "TriMesh_algo.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <vector>
+
+#include "TriMesh.h"
+#include "TriMesh_algo.h"
 using namespace std;
 using namespace trimesh;
 
-
-void usage(const char *myname)
-{
+void usage(const char* myname) {
 	fprintf(stderr, "Usage: %s infile [-noxf] ( desired_info | stat_op desired_stat )\n", myname);
 	fprintf(stderr, "\nInfo:\n");
 	fprintf(stderr, "	faces		Number of faces\n");
@@ -61,36 +61,30 @@ void usage(const char *myname)
 	exit(1);
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
 	// Don't clutter the output
 	TriMesh::set_verbose(0);
 
 	// Parse command line and read mesh
-	if (argc < 3)
-		usage(argv[0]);
+	if (argc < 3) usage(argv[0]);
 
-	const char *filename = argv[1];
-	const char *info_type = argv[2];
-	const char *info_param = (argc > 3) ? argv[3] : NULL;
+	const char* filename = argv[1];
+	const char* info_type = argv[2];
+	const char* info_param = (argc > 3) ? argv[3] : nullptr;
 	bool use_xf = true;
 	if (!strcmp(argv[2], "-noxf")) {
-		if (argc < 4)
-			usage(argv[0]);
+		if (argc < 4) usage(argv[0]);
 		use_xf = false;
 		info_type = argv[3];
-		info_param = (argc > 4) ? argv[4] : NULL;
+		info_param = (argc > 4) ? argv[4] : nullptr;
 	}
 
-	TriMesh *mesh = TriMesh::read(filename);
-	if (!mesh)
-		usage(argv[0]);
+	auto mesh = TriMesh::read(filename);
+	if (!mesh) usage(argv[0]);
 
 	if (use_xf) {
 		xform xf;
-		if (xf.read(xfname(filename)))
-			apply_xform(mesh, xf);
+		if (xf.read(xfname(filename))) apply_xform(mesh.get(), xf);
 	}
 
 	// Figure out what we want
@@ -103,61 +97,54 @@ int main(int argc, char *argv[])
 		return 0;
 	} else if (!strcmp(info_type, "bbox")) {
 		mesh->need_bbox();
-		printf("%g %g %g\n%g %g %g\n",
-			mesh->bbox.min[0], mesh->bbox.min[1], mesh->bbox.min[2],
-			mesh->bbox.max[0], mesh->bbox.max[1], mesh->bbox.max[2]);
+		printf("Bounding box:\n  %g %g %g\n  %g %g %g\n", mesh->bbox.min()[0], mesh->bbox.min()[1],
+		       mesh->bbox.min()[2], mesh->bbox.max()[0], mesh->bbox.max()[1], mesh->bbox.max()[2]);
 		return 0;
 	} else if (!strcmp(info_type, "csize")) {
 		mesh->need_bbox();
-		printf("%g %g %g\n%g %g %g\n",
-			mesh->bbox.center()[0], mesh->bbox.center()[1], mesh->bbox.center()[2],
-			mesh->bbox.size()[0], mesh->bbox.size()[1], mesh->bbox.size()[2]);
+		printf("%g %g %g\n%g %g %g\n", mesh->bbox.center()[0], mesh->bbox.center()[1], mesh->bbox.center()[2],
+		       mesh->bbox.size()[0], mesh->bbox.size()[1], mesh->bbox.size()[2]);
 		return 0;
 	} else if (!strcmp(info_type, "bsphere")) {
 		mesh->need_bsphere();
-		printf("%g %g %g\n%g\n",
-			mesh->bsphere.center[0], mesh->bsphere.center[1], mesh->bsphere.center[2],
-			mesh->bsphere.r);
+		printf("%g %g %g\n%g\n", mesh->bsphere.center[0], mesh->bsphere.center[1], mesh->bsphere.center[2],
+		       mesh->bsphere.r);
 		return 0;
 	} else if (!strcmp(info_type, "vert_mean")) {
 		point p = point_center_of_mass(mesh->vertices);
 		printf("%g %g %g\n", p[0], p[1], p[2]);
 		return 0;
 	} else if (!strcmp(info_type, "face_mean")) {
-		point p = mesh_center_of_mass(mesh);
+		point p = mesh_center_of_mass(mesh.get());
 		printf("%g %g %g\n", p[0], p[1], p[2]);
 		return 0;
 	} else if (!strcmp(info_type, "vert_stdev")) {
-		trans(mesh, -point_center_of_mass(mesh->vertices));
+		trans(mesh.get(), -point_center_of_mass(mesh->vertices));
 		float C[3][3];
 		point_covariance(mesh->vertices, C);
 		printf("%g\n", sqrt(C[0][0] + C[1][1] + C[2][2]));
 		return 0;
 	} else if (!strcmp(info_type, "face_stdev")) {
-		trans(mesh, -mesh_center_of_mass(mesh));
+		trans(mesh.get(), -mesh_center_of_mass(mesh.get()));
 		float C[3][3];
-		mesh_covariance(mesh, C);
+		mesh_covariance(mesh.get(), C);
 		printf("%g\n", sqrt(C[0][0] + C[1][1] + C[2][2]));
 		return 0;
 	} else if (!strcmp(info_type, "overlap") && info_param) {
-		TriMesh *mesh2 = TriMesh::read(info_param);
-		if (!mesh2)
-			usage(argv[0]);
+		auto mesh2 = TriMesh::read(info_param);
+		if (!mesh2) usage(argv[0]);
 		xform xf2;
-		if (use_xf)
-			xf2.read(xfname(argv[3]));
+		if (use_xf) xf2.read(xfname(argv[3]));
 		float area = 0.0f, rmsdist = 0.0f;
-		find_overlap(mesh, mesh2, xform(), xf2, area, rmsdist);
+		find_overlap(mesh.get(), mesh2.get(), xform(), xf2, area, rmsdist);
 		printf("%g %g\n", area, rmsdist);
 		return 0;
 	} else if (!strcmp(info_type, "iou") && info_param) {
-		TriMesh *mesh2 = TriMesh::read(info_param);
-		if (!mesh2)
-			usage(argv[0]);
+		auto mesh2 = TriMesh::read(info_param);
+		if (!mesh2) usage(argv[0]);
 		xform xf2;
-		if (use_xf)
-			xf2.read(xfname(argv[3]));
-		printf("%g\n", iou(mesh, mesh2, xform(), xf2));
+		if (use_xf) xf2.read(xfname(argv[3]));
+		printf("%g\n", iou(mesh.get(), mesh2.get(), xform(), xf2));
 		return 0;
 	}
 
@@ -192,8 +179,7 @@ int main(int argc, char *argv[])
 	else
 		usage(argv[0]);
 
-	if (!info_param)
-		usage(argv[0]);
+	if (!info_param) usage(argv[0]);
 
 	TriMesh::StatVal val = TriMesh::STAT_VALENCE;
 	if (!strcmp(info_param, "valence"))

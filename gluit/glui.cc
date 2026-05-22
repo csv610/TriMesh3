@@ -280,7 +280,7 @@ void glui_mouse_func(int button, int state, int x, int y)
   glut_window = GLUI_Master.find_glut_window( current_window );
 
   if ( glut_window ) { /**  Was event in a GLUT window?  **/
-    if ( GLUI_Master.active_control_glui != NULL ) 
+    if ( GLUI_Master.active_control_glui != nullptr ) 
       GLUI_Master.active_control_glui->disactivate_current_control();
 
     glut_window->glut_mouse_CB( button, state, x, y );
@@ -385,7 +385,7 @@ void glui_idle_func(void)
       first glui window ***/
     /*   int current_window, new_window;          */
     /*   current_window = glutGetWindow();          */
-    /*   if (GLUI_Master.gluis.first_child() != NULL ) {          */
+    /*   if (GLUI_Master.gluis.first_child() != nullptr ) {          */
     /*      new_window = ((GLUI_Main*)GLUI_Master.gluis.first_child())-> */
     /*   main_gfx_window_id;          */
     /*   if ( new_window > 0 AND new_window != old_window ) {          */
@@ -413,7 +413,7 @@ GLUI    *GLUI_Master_Object::create_glui( const char *name, long flags,int x,int
     return new_glui;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -438,7 +438,7 @@ GLUI   *GLUI_Master_Object::create_glui_subwindow( int parent_window,
     return new_glui;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -457,7 +457,7 @@ GLUI  *GLUI_Master_Object::find_glui_by_window_id( int window_id )
     
     node = node->next();
   }
-  return NULL;
+  return nullptr;
 }
 
 
@@ -636,7 +636,7 @@ void    GLUI_Main::keyboard(unsigned char key, int x, int y)
     active_control->mouse_up_handler( 0, 0, true );
   } else {
     /*** Pass the keystroke onto the active control, if any ***/
-    if ( active_control != NULL )
+    if ( active_control != nullptr )
       active_control->key_handler( key, curr_modifiers );
   }
 }
@@ -649,7 +649,7 @@ void    GLUI_Main::special(int key, int x, int y)
   curr_modifiers = glutGetModifiers();
 
   /*** Pass the keystroke onto the active control, if any ***/
-  if ( active_control != NULL )
+  if ( active_control != nullptr )
     active_control->special_handler( key, glutGetModifiers() );
 }
 
@@ -670,7 +670,7 @@ void    GLUI_Main::mouse(int button, int state, int x, int y)
 
     /*if ( control ) printf( "control: %s\n", control->name.string );          */
     
-    if ( mouse_button_down AND active_control != NULL AND
+    if ( mouse_button_down AND active_control != nullptr AND
      state == GLUT_UP ) {
       /** We just released the mouse, which was depressed at some
     control **/
@@ -693,7 +693,7 @@ void    GLUI_Main::mouse(int button, int state, int x, int y)
       /*** We just pressed the mouse down at some control ***/
 
       if ( active_control != control ) {
-        if ( active_control != NULL ) {
+        if ( active_control != nullptr ) {
           /** There is an active control still - disactivate it ***/
           disactivate_current_control();
         }
@@ -725,7 +725,7 @@ void    GLUI_Main::motion(int x, int y)
 
   control = find_control(x,y);
   
-  if ( mouse_button_down AND active_control != NULL ) {
+  if ( mouse_button_down AND active_control != nullptr ) {
       active_control->mouse_held_down_handler(x,y,control==active_control);
   }
 }
@@ -786,7 +786,7 @@ void    GLUI_Main::idle(void)
 
   /*  printf( "IDLE \t" );          */
 
-  if ( active_control != NULL ) {
+  if ( active_control != nullptr ) {
     /* First we check if the control actually needs the idle right now.
        Otherwise, let's avoid wasting cycles and OpenGL context switching */
 
@@ -810,17 +810,17 @@ GLUI_Control  *GLUI_Main::find_control( int x, int y )
 {
   GLUI_Control *node, *last_container;
 
-  last_container = NULL;
+  last_container = nullptr;
 
   node = main_panel;
-  while( node != NULL ) {
+  while( node != nullptr ) {
     if ( node->type != GLUI_CONTROL_COLUMN AND
      PT_IN_BOX( x, y, 
             node->x_abs, node->x_abs + node->w, 
             node->y_abs, node->y_abs + node->h ) ) {
       /*** Point is inside current node ***/
       
-      if ( node->first_child() == NULL ) {
+      if ( node->first_child() == nullptr ) {
     /*** SPECIAL CASE: for edittext boxes, we make sure click is
       in box, and not on name string.  This should be generalized
       for all controls later... ***/
@@ -853,7 +853,7 @@ GLUI_Control  *GLUI_Main::find_control( int x, int y )
     return last_container;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -912,7 +912,7 @@ void    GLUI_Main::align_controls( GLUI_Control *control )
 
   child = (GLUI_Control*) control->first_child();
 
-  while( child != NULL ) {
+  while( child != nullptr ) {
     align_controls( child );
     
     child = (GLUI_Control*)child->next();
@@ -974,8 +974,8 @@ GLUI_Main::GLUI_Main( void )
   mouse_button_down       = false;
   w                       = 0;
   h                       = 0;
-  active_control          = NULL;
-  mouse_over_control      = NULL;
+  active_control          = nullptr;
+  mouse_over_control      = nullptr;
   main_gfx_window_id      = -1;
   glut_window_id          = -1;
   curr_modifiers          = 0;
@@ -1072,7 +1072,7 @@ void         GLUI_Main::activate_control( GLUI_Control *control, int how )
   }
 
   /*******      Now activate it      *****/
-  if ( control != NULL AND control->can_activate AND control->enabled ) {
+  if ( control != nullptr AND control->can_activate AND control->enabled ) {
     active_control = control;
     
     control->activate(how);
@@ -1083,7 +1083,7 @@ void         GLUI_Main::activate_control( GLUI_Control *control, int how )
     /*}          */
   }
   else {
-    active_control = NULL;
+    active_control = nullptr;
   }
 
   /*  printf( "activate: %d\n", glutGetWindow() );          */
@@ -1098,7 +1098,7 @@ void         GLUI_Main::disactivate_current_control( void )
 {
   int orig;
 
-  if ( active_control != NULL ) {
+  if ( active_control != nullptr ) {
     orig = active_control->set_to_glut_window();
 
     active_control->disactivate();
@@ -1114,12 +1114,12 @@ void         GLUI_Main::disactivate_current_control( void )
 
     active_control->restore_window( orig );
 
-    active_control = NULL;
+    active_control = nullptr;
   }
 
   /*  printf( "disactivate: %d\n", glutGetWindow() );          */
-  GLUI_Master.active_control      = NULL;
-  GLUI_Master.active_control_glui = NULL;
+  GLUI_Master.active_control      = nullptr;
+  GLUI_Master.active_control_glui = nullptr;
 }
 
 
@@ -1130,7 +1130,7 @@ GLUI_Control  *GLUI_Main::find_next_control_( GLUI_Control *control )
   /*** THIS IS NOT find_next_control()!  This is an unused older
     version (look at the underscore at the end) ***/
 
-  if ( control == NULL )
+  if ( control == nullptr )
     return find_next_control_rec( main_panel );
   else
     return find_next_control_rec( control );
@@ -1140,7 +1140,7 @@ GLUI_Control  *GLUI_Main::find_next_control_( GLUI_Control *control )
 
 GLUI_Control  *GLUI_Main::find_next_control_rec( GLUI_Control *control )
 {
-  GLUI_Control *child = NULL, *rec_control, *sibling;
+  GLUI_Control *child = nullptr, *rec_control, *sibling;
 
   /*** Recursively investigate children ***/
   child = (GLUI_Control*) control->first_child();
@@ -1169,7 +1169,7 @@ GLUI_Control  *GLUI_Main::find_next_control_rec( GLUI_Control *control )
       return rec_control;
   }
   
-  return NULL;
+  return nullptr;
 }
 
 
@@ -1177,17 +1177,17 @@ GLUI_Control  *GLUI_Main::find_next_control_rec( GLUI_Control *control )
 
 GLUI_Control  *GLUI_Main::find_next_control( GLUI_Control *control )
 {
-  GLUI_Control *tmp_control = NULL;
+  GLUI_Control *tmp_control = nullptr;
   int           back_up;
   
-  if ( control == NULL )
+  if ( control == nullptr )
     control = main_panel;
 
-  while( control != NULL ) {
+  while( control != nullptr ) {
     /** see if this control has a child **/
     tmp_control = (GLUI_Control*) control->first_child();
 
-    if ( tmp_control != NULL ) {
+    if ( tmp_control != nullptr ) {
       if ( tmp_control->can_activate AND tmp_control->enabled )
     return tmp_control;
       
@@ -1200,7 +1200,7 @@ GLUI_Control  *GLUI_Main::find_next_control( GLUI_Control *control )
     /** see if this control has a next sibling **/
     tmp_control = (GLUI_Control*) control->next();
     
-    if ( tmp_control != NULL ) {
+    if ( tmp_control != nullptr ) {
       if ( tmp_control->can_activate AND tmp_control->enabled )
     return tmp_control;
       
@@ -1222,7 +1222,7 @@ GLUI_Control  *GLUI_Main::find_next_control( GLUI_Control *control )
 
     /***    if ( control->is_container ) {
       tmp_control = control;
-      control     = NULL;
+      control     = nullptr;
       break;
       }
       else {
@@ -1232,18 +1232,18 @@ GLUI_Control  *GLUI_Main::find_next_control( GLUI_Control *control )
       }
     }
 
-    /** Check if we've cycled back to the top... if so, return NULL **/
+    /** Check if we've cycled back to the top... if so, return nullptr **/
     if ( control == main_panel ) {
-      return NULL;
+      return nullptr;
     }
   }
   /*
-    if ( tmp_control != NULL AND tmp_control->can_activate AND
+    if ( tmp_control != nullptr AND tmp_control->can_activate AND
     tmp_control->enabled ) {
     return tmp_control;
     }*/
 
-  return NULL;
+  return nullptr;
 }
 
 
@@ -1253,13 +1253,13 @@ GLUI_Control  *GLUI_Main::find_prev_control( GLUI_Control *control )
 {
   GLUI_Control *tmp_control, *next_control;
 
-  if ( control == NULL ) {        /* here we find the last valid control */
+  if ( control == nullptr ) {        /* here we find the last valid control */
     next_control = main_panel;
   
     do {
       tmp_control  = next_control;
       next_control = find_next_control( tmp_control ); 
-    } while( next_control != NULL );
+    } while( next_control != nullptr );
 
     return tmp_control;    
   }
@@ -1269,10 +1269,10 @@ GLUI_Control  *GLUI_Main::find_prev_control( GLUI_Control *control )
     do {
       tmp_control  = next_control;
       next_control = find_next_control( tmp_control ); 
-    } while( next_control != NULL AND next_control != control );
+    } while( next_control != nullptr AND next_control != control );
     
-    if ( next_control == NULL OR tmp_control == main_panel )
-      return NULL;
+    if ( next_control == nullptr OR tmp_control == main_panel )
+      return nullptr;
     else 
       return tmp_control;
   }
@@ -1345,8 +1345,8 @@ void   GLUI_Main::close_internal( void )
   this->unlink();
   
   if ( GLUI_Master.active_control_glui == this ) {
-    GLUI_Master.active_control      = NULL;
-    GLUI_Master.active_control_glui = NULL;
+    GLUI_Master.active_control      = nullptr;
+    GLUI_Master.active_control_glui = nullptr;
   }
     
   if ( parent_window != -1 ) {
@@ -1621,7 +1621,7 @@ void glui_parent_window_special_func(int key, int x, int y)
 
   /**  If clicking in the main area of a window w/subwindows, 
     disactivate any current control  **/
-  if ( GLUI_Master.active_control_glui != NULL ) 
+  if ( GLUI_Master.active_control_glui != nullptr ) 
     GLUI_Master.active_control_glui->disactivate_current_control();
 
   /***   Now pass on the mouse event   ***/
@@ -1651,7 +1651,7 @@ void glui_parent_window_mouse_func(int button, int state, int x, int y)
 
   /**  If clicking in the main area of a window w/subwindows, 
     disactivate any current control  **/
-  if ( GLUI_Master.active_control_glui != NULL ) 
+  if ( GLUI_Master.active_control_glui != nullptr ) 
     GLUI_Master.active_control_glui->disactivate_current_control();
 
 
@@ -1688,8 +1688,8 @@ GLUI_Glut_Window  *GLUI_Master_Object::find_glut_window( int window_id )
     window = (GLUI_Glut_Window*) window->next();
   }
 
-  /***  Window not found - return NULL ***/
-  return NULL;
+  /***  Window not found - return nullptr ***/
+  return nullptr;
 }
 
 

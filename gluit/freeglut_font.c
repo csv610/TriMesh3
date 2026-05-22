@@ -155,7 +155,7 @@ void FGAPIENTRY glutBitmapString( void* fontID, const unsigned char *string )
     while( ( c = *string++) )
         if( c == '\n' )
         {
-            glBitmap ( 0, 0, 0, 0, -x, (float) -font->Height, NULL );
+            glBitmap ( 0, 0, 0, 0, -x, (float) -font->Height, nullptr );
             x = 0.0f;
         }
         else  /* Not an EOL, draw the bitmap character */

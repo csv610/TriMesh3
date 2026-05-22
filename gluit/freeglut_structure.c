@@ -40,13 +40,13 @@ typedef SSIZE_T ssize_t;
  * created between glutInit() and glutMainLoop() return.
  */
 
-SFG_Structure fgStructure = { { NULL, NULL },  /* The list of windows       */
-                              { NULL, NULL },  /* The list of menus         */
-                              { NULL, NULL },  /* Windows to Destroy list   */
-                              NULL,            /* The current window        */
-                              NULL,            /* The current menu          */
-                              NULL,            /* The menu OpenGL context   */
-                              NULL,            /* The game mode window      */
+SFG_Structure fgStructure = { { nullptr, nullptr },  /* The list of windows       */
+                              { nullptr, nullptr },  /* The list of menus         */
+                              { nullptr, nullptr },  /* Windows to Destroy list   */
+                              nullptr,            /* The current window        */
+                              nullptr,            /* The current menu          */
+                              nullptr,            /* The menu OpenGL context   */
+                              nullptr,            /* The game mode window      */
                               0,               /* The current new window ID */
                               0 };             /* The current new menu ID   */
 
@@ -59,7 +59,7 @@ static void fghClearCallBacks( SFG_Window *window )
     {
         int i;
         for( i = 0; i < TOTAL_CALLBACKS; ++i )
-            window->CallBacks[ i ] = NULL;
+            window->CallBacks[ i ] = nullptr;
     }
 }
 
@@ -67,7 +67,7 @@ static void fghClearCallBacks( SFG_Window *window )
  * This private function creates, opens and adds to the hierarchy
  * a freeglut window complete with OpenGL context and stuff...
  *
- * If parent is set to NULL, the window created will be a topmost one.
+ * If parent is set to nullptr, the window created will be a topmost one.
  */
 SFG_Window* fgCreateWindow( SFG_Window* parent, const char* title,
                             GLboolean positionUse, int x, int y,
@@ -78,7 +78,7 @@ SFG_Window* fgCreateWindow( SFG_Window* parent, const char* title,
     SFG_Window *window = (SFG_Window *)calloc( sizeof(SFG_Window), 1 );
 
 #if TARGET_HOST_UNIX_X11
-    window->Window.FBConfig = NULL;
+    window->Window.FBConfig = nullptr;
 #endif
     fghClearCallBacks( window );
 
@@ -127,11 +127,11 @@ SFG_Menu* fgCreateMenu( FGCBMenu menuCallback )
     /* Have the menu object created */
     SFG_Menu* menu = (SFG_Menu *)calloc( sizeof(SFG_Menu), 1 );
 
-    menu->ParentWindow = NULL;
+    menu->ParentWindow = nullptr;
 
     /* Create a window for the menu to reside in. */
 
-    fgCreateWindow( NULL, "freeglut menu", GL_TRUE, x, y, GL_TRUE, w, h,
+    fgCreateWindow( nullptr, "freeglut menu", GL_TRUE, x, y, GL_TRUE, w, h,
                     GL_FALSE, GL_TRUE );
     menu->Window = fgStructure.CurrentWindow;
     glutDisplayFunc( fgDisplayMenu );
@@ -142,7 +142,7 @@ SFG_Menu* fgCreateMenu( FGCBMenu menuCallback )
     /* Initialize the object properties: */
     menu->ID       = ++fgStructure.MenuID;
     menu->Callback = menuCallback;
-    menu->ActiveEntry = NULL;
+    menu->ActiveEntry = nullptr;
 
     fgListInit( &menu->Entries );
     fgListAppend( &fgStructure.Menus, &menu->Node );
@@ -167,7 +167,7 @@ void fgAddToWindowDestroyList( SFG_Window* window )
 
     /* Check if the window is the current one... */
     if( fgStructure.CurrentWindow == window )
-        fgStructure.CurrentWindow = NULL;
+        fgStructure.CurrentWindow = nullptr;
 
     /*
      * Clear all window callbacks except Destroy, which will
@@ -229,7 +229,7 @@ void fgDestroyWindow( SFG_Window* window )
     fgCloseWindow( window );
     free( window );
     if( fgStructure.CurrentWindow == window )
-        fgStructure.CurrentWindow = NULL;
+        fgStructure.CurrentWindow = nullptr;
 }
 
 /*
@@ -243,15 +243,15 @@ static void fghRemoveMenuFromWindow( SFG_Window* window, SFG_Menu* menu )
 
     /* Check whether this is the active menu in the window */
     if ( menu == window->ActiveMenu )
-        window->ActiveMenu = NULL ;
+        window->ActiveMenu = nullptr ;
 
     /*
      * Check if the menu is attached to the current window,
-     * if so, have it detached (by overwriting with a NULL):
+     * if so, have it detached (by overwriting with a nullptr):
      */
     for( i = 0; i < FREEGLUT_MAX_MENUS; i++ )
         if( window->Menu[ i ] == menu )
-            window->Menu[ i ] = NULL;
+            window->Menu[ i ] = nullptr;
 
     /* Call this function for all of the window's children recursively: */
     for( subWindow = (SFG_Window *)window->Children.First;
@@ -272,7 +272,7 @@ static void fghRemoveMenuFromMenu( SFG_Menu* from, SFG_Menu* menu )
          entry;
          entry = ( SFG_MenuEntry * )entry->Node.Next )
         if( entry->SubMenu == menu )
-            entry->SubMenu = NULL;
+            entry->SubMenu = nullptr;
 }
 
 /*
@@ -323,17 +323,17 @@ void fgDestroyMenu( SFG_Menu* menu )
 
         if( entry->Text )
             free( entry->Text );
-        entry->Text = NULL;
+        entry->Text = nullptr;
 
         free( entry );
     }
 
     if( fgStructure.CurrentWindow == menu->Window )
-        fgSetWindow( NULL );
+        fgSetWindow( nullptr );
     fgDestroyWindow( menu->Window );
     fgListRemove( &fgStructure.Menus, &menu->Node );
     if( fgStructure.CurrentMenu == menu )
-        fgStructure.CurrentMenu = NULL;
+        fgStructure.CurrentMenu = nullptr;
 
     free( menu );
 }
@@ -356,10 +356,10 @@ void fgCreateStructure( void )
     fgListInit(&fgStructure.Menus);
     fgListInit(&fgStructure.WindowsToDestroy);
 
-    fgStructure.CurrentWindow = NULL;
-    fgStructure.CurrentMenu = NULL;
-    fgStructure.MenuContext = NULL;
-    fgStructure.GameModeWindow = NULL;
+    fgStructure.CurrentWindow = nullptr;
+    fgStructure.CurrentMenu = nullptr;
+    fgStructure.MenuContext = nullptr;
+    fgStructure.GameModeWindow = nullptr;
     fgStructure.WindowID = 0;
     fgStructure.MenuID = 0;
 }
@@ -488,7 +488,7 @@ SFG_Window* fgWindowByHandle ( SFG_WindowHandleType hWindow )
 
     if( enumerator.found )
         return( SFG_Window *) enumerator.data;
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -528,7 +528,7 @@ SFG_Window* fgWindowByID( int windowID )
     fgEnumWindows( fghcbWindowByID, &enumerator );
     if( enumerator.found )
         return ( SFG_Window * )enumerator.data;
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -566,7 +566,7 @@ SFG_Menu* fgMenuByID( int menuID )
     if( enumerator.found )
         return( SFG_Menu *) enumerator.data;
     
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -602,7 +602,7 @@ SFG_Menu* fgGetActiveMenu( )
     if( enumerator.found )
         return( SFG_Menu *) enumerator.data;
     
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -610,8 +610,8 @@ SFG_Menu* fgGetActiveMenu( )
  */
 void fgListInit(SFG_List *list)
 {
-    list->First = NULL;
-    list->Last = NULL;
+    list->First = nullptr;
+    list->Last = nullptr;
 }
 
 void fgListAppend(SFG_List *list, SFG_Node *node)
@@ -624,11 +624,11 @@ void fgListAppend(SFG_List *list, SFG_Node *node)
     }
     else
     {
-        node->Prev = NULL;
+        node->Prev = nullptr;
         list->First = node;
     }
 
-    node->Next = NULL;
+    node->Next = nullptr;
     list->Last = node;
 }
 

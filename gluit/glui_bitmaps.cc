@@ -53,7 +53,7 @@ void GLUI_Bitmap::load_from_array( int *array )
   w = 0;
   h = 0;
 
-  if ( array == NULL )
+  if ( array == nullptr )
     return;
 
   w = array[0];
@@ -72,7 +72,7 @@ void GLUI_StdBitmaps::draw( int bitmap_num, int x, int y )
 {
   //  int i;
 
-  if ( bitmaps[bitmap_num].pixels != NULL ) {
+  if ( bitmaps[bitmap_num].pixels != nullptr ) {
     glRasterPos2f( (float)x+.5f, (float)y + (float)bitmaps[bitmap_num].h + .5f);
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 

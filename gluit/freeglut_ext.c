@@ -33,7 +33,7 @@ static GLUTproc fghGetGLUTProcAddress( const char* procName )
 {
     /* optimization: quick initial check */
     if( strncmp( procName, "glut", 4 ) != 0 )
-        return NULL;
+        return nullptr;
 
 #define CHECK_NAME(x) if( strcmp( procName, #x ) == 0) return (GLUTproc)x;
     CHECK_NAME(glutInit);
@@ -205,7 +205,7 @@ static GLUTproc fghGetGLUTProcAddress( const char* procName )
     CHECK_NAME(glutInitWarningFunc);
 #undef CHECK_NAME
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -216,7 +216,7 @@ SFG_Proc fghGetProcAddress( const char *procName )
 #elif TARGET_HOST_POSIX_X11 && defined( GLX_ARB_get_proc_address )
     return (SFG_Proc)glXGetProcAddressARB( ( const GLubyte * )procName );
 #else
-    return NULL;
+    return nullptr;
 #endif
 }
 
@@ -229,5 +229,5 @@ glutGetProcAddress( const char *procName )
 
     /* Try GLUT functions first, then core GL functions */
     p = fghGetGLUTProcAddress( procName );
-    return ( p != NULL ) ? p : fghGetProcAddress( procName );
+    return ( p != nullptr ) ? p : fghGetProcAddress( procName );
 }

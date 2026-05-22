@@ -9,20 +9,16 @@ Code for dealing with range grids
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
 
-
 namespace trimesh {
 
 // Helper function - make a face with the 3 given vertices from the grid
-static inline void mkface(TriMesh *mesh, int v1, int v2, int v3)
-{
-	mesh->faces.push_back(TriMesh::Face(
-		mesh->grid[v1], mesh->grid[v2], mesh->grid[v3]));
+static inline void mkface(TriMesh* mesh, int v1, int v2, int v3) {
+	mesh->faces.push_back(TriMesh::Face(mesh->grid[v1], mesh->grid[v2], mesh->grid[v3]));
 }
 
-
 // Triangulate a range grid
-void TriMesh::triangulate_grid(bool remove_slivers /* = true */)
-{
+void TriMesh::triangulate_grid(bool remove_slivers /* = true */) {
+	std::lock_guard<std::recursive_mutex> lock(computation_mutex);
 	dprintf("Triangulating... ");
 
 	int nv = vertices.size();
@@ -36,7 +32,7 @@ void TriMesh::triangulate_grid(bool remove_slivers /* = true */)
 				grid[i] = GRID_INVALID;
 			else if (!vertices[grid[i]])
 				grid[i] = GRID_INVALID;
-		} else { // Handle negative or NaN
+		} else {  // Handle negative or NaN
 			grid[i] = GRID_INVALID;
 		}
 	}
@@ -49,8 +45,7 @@ void TriMesh::triangulate_grid(bool remove_slivers /* = true */)
 			int lr = ll + 1;
 			int ul = ll + grid_width;
 			int ur = ul + 1;
-			int nvalid = (grid[ll] >= 0) + (grid[lr] >= 0) +
-			             (grid[ul] >= 0) + (grid[ur] >= 0);
+			int nvalid = (grid[ll] >= 0) + (grid[lr] >= 0) + (grid[ul] >= 0) + (grid[ur] >= 0);
 			if (nvalid == 4)
 				ntris += 2;
 			else if (nvalid == 3)
@@ -69,17 +64,13 @@ void TriMesh::triangulate_grid(bool remove_slivers /* = true */)
 			int lr = ll + 1;
 			int ul = ll + grid_width;
 			int ur = ul + 1;
-			int nvalid = (grid[ll] >= 0) + (grid[lr] >= 0) +
-			             (grid[ul] >= 0) + (grid[ur] >= 0);
-			if (nvalid < 3)
-				continue;
+			int nvalid = (grid[ll] >= 0) + (grid[lr] >= 0) + (grid[ul] >= 0) + (grid[ur] >= 0);
+			if (nvalid < 3) continue;
 			if (nvalid == 4) {
 				// Triangulate in the direction that
 				// gives the shorter diagonal
-				float ll_ur = dist2(vertices[grid[ll]],
-				                    vertices[grid[ur]]);
-				float lr_ul = dist2(vertices[grid[lr]],
-				                    vertices[grid[ul]]);
+				float ll_ur = dist2(vertices[grid[ll]], vertices[grid[ur]]);
+				float lr_ul = dist2(vertices[grid[lr]], vertices[grid[ul]]);
 				if (ll_ur < lr_ul) {
 					mkface(this, ll, lr, ur);
 					mkface(this, ll, ur, ul);
@@ -102,9 +93,8 @@ void TriMesh::triangulate_grid(bool remove_slivers /* = true */)
 	}
 
 	dprintf("%lu faces.\n", ntris);
-	if (!faces.empty() && remove_slivers)
-		remove_sliver_faces(this);
+	if (!faces.empty() && remove_slivers) remove_sliver_faces(this);
 	dprintf("  ");
 }
 
-} // namespace trimesh
+}  // namespace trimesh

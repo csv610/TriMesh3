@@ -16,25 +16,17 @@ option(BUILD_UTILS "Build utility programs" ON)
 option(BUILD_TESTING "Build unit tests" ON)
 option(ENABLE_COVERAGE "Enable code coverage instrumentation" OFF)
 
-# Include directories
-include_directories(include)
-
-if(ENABLE_COVERAGE)
-    add_compile_options(--coverage)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
-endif()
-
 # Platform specific settings
 if(APPLE)
     add_definitions(-DGL_SILENCE_DEPRECATION)
-    set(OPENGL_LIBS "-framework OpenGL" "-framework GLUT")
+    find_library(OPENGL_FRAMEWORK OpenGL)
+    find_library(GLUT_FRAMEWORK GLUT)
+    set(OPENGL_LIBS ${OPENGL_FRAMEWORK} ${GLUT_FRAMEWORK})
     set(DONT_BUILD_FREEGLUT ON)
 else()
     find_package(OpenGL REQUIRED)
     find_package(GLUT REQUIRED)
-    include_directories(${OPENGL_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
-    set(OPENGL_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+    set(OPENGL_LIBS OpenGL::GL GLUT::GLUT)
 endif()
 
 # trimesh library
@@ -67,6 +59,15 @@ set(TRIMESH_SOURCES
 )
 
 add_library(trimesh STATIC ${TRIMESH_SOURCES})
+target_include_directories(trimesh PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+if(ENABLE_COVERAGE)
+    target_compile_options(trimesh PRIVATE --coverage)
+    target_link_options(trimesh PRIVATE --coverage)
+endif()
 
 # gluit library
 if(BUILD_GLUIT)
@@ -128,7 +129,12 @@ if(BUILD_GLUIT)
     endif()
 
     add_library(gluit STATIC ${GLUIT_SOURCES})
-    target_include_directories(gluit PRIVATE include/GL)
+    target_compile_options(gluit PRIVATE "-w")
+    target_include_directories(gluit 
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        PRIVATE include/GL gluit
+    )
+    target_link_libraries(gluit PUBLIC trimesh ${OPENGL_LIBS})
 endif()
 
 # Utilities
@@ -150,13 +156,13 @@ if(BUILD_UTILS)
 
     foreach(util ${UTILS})
         add_executable(${util} utilsrc/${util}.cc)
-        target_link_libraries(${util} trimesh)
+        target_link_libraries(${util} PRIVATE trimesh)
         install(TARGETS ${util} DESTINATION ${CMAKE_INSTALL_BINDIR})
     endforeach()
 
     if(BUILD_GLUIT)
         add_executable(mesh_view utilsrc/mesh_view.cc)
-        target_link_libraries(mesh_view trimesh gluit ${OPENGL_LIBS})
+        target_link_libraries(mesh_view PRIVATE gluit)
         install(TARGETS mesh_view DESTINATION ${CMAKE_INSTALL_BINDIR})
     endif()
 endif()

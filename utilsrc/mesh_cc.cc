@@ -13,51 +13,43 @@ Does the same thing as "plycomps", part of the plytools package by Greg Turk.
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <memory>
+
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
 #ifdef _WIN32
-# include "wingetopt.h"
+#include "wingetopt.h"
 #else
-# include <unistd.h>
+#include <unistd.h>
 #endif
 #include <cstdio>
 using namespace std;
 using namespace trimesh;
 
-
 #define BIGNUM numeric_limits<int>::max()
-
 
 // Print out the connected components that are bigger than morethan and
 // smaller than lessthan.  The largest min(nprint, total) components are
 // printed out, unless morethan == 0 and lessthan != BIGNUM, in which case
 // the smallest min(nprint, total) components are printed
-void print_comps(const vector<int> &compsizes,
-                 int morethan, int lessthan, int total, int nprint)
-{
-	printf("%lu connected components total.\n",
-		(unsigned long) compsizes.size());
+void print_comps(const vector<int>& compsizes, int morethan, int lessthan, int total, int nprint) {
+	printf("%lu connected components total.\n", (unsigned long) compsizes.size());
 
-	if (compsizes.size() < 1 || total < 1)
-		return;
-	int numtoprint = min(min(nprint, total), (int)compsizes.size());
+	if (compsizes.size() < 1 || total < 1) return;
+	int numtoprint = min(min(nprint, total), (int) compsizes.size());
 
 	if (morethan == 0 && lessthan != BIGNUM) {
 		// Print numtoprint smallest components
 		for (int i = 0; i < numtoprint; i++)
-			printf(" Component #%d - %d faces\n", i+1, compsizes[compsizes.size()-1-i]);
+			printf(" Component #%d - %d faces\n", i + 1, compsizes[compsizes.size() - 1 - i]);
 	} else {
 		// Print numtoprint largest components
-		for (int i = 0; i < numtoprint; i++)
-			printf(" Component #%d - %d faces\n", i+1, compsizes[i]);
+		for (int i = 0; i < numtoprint; i++) printf(" Component #%d - %d faces\n", i + 1, compsizes[i]);
 	}
-	if (numtoprint != (int)compsizes.size())
-		printf(" ...\n");
+	if (numtoprint != (int) compsizes.size()) printf(" ...\n");
 }
 
-
-void usage(const char *myname)
-{
+void usage(const char* myname) {
 	fprintf(stderr, "Usage: %s [options] in.ply [out.ply]\n", myname);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "	-v		Base connectivity on vertices, not edges\n");
@@ -69,9 +61,7 @@ void usage(const char *myname)
 	exit(1);
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
 	// Parse command line
 	int morethan = 0;
 	int lessthan = BIGNUM;
@@ -79,28 +69,39 @@ int main(int argc, char *argv[])
 	int nprint = 20;
 	bool conn_vert = false;
 	bool splitcc = false;
-	const char *infilename=NULL, *outfilename=NULL;
+	const char *infilename = nullptr, *outfilename = nullptr;
 
 	int c;
 	while ((c = getopt(argc, argv, "hvasm:l:t:")) != EOF) {
 		switch (c) {
-			case 'v': conn_vert = true; break;
-			case 'a': nprint = BIGNUM; break;
-			case 's': splitcc = true; break;
-			case 'm': morethan = atoi(optarg); break;
-			case 'l': lessthan = atoi(optarg); break;
-			case 't': total = atoi(optarg); break;
-			default: usage(argv[0]);
+			case 'v':
+				conn_vert = true;
+				break;
+			case 'a':
+				nprint = BIGNUM;
+				break;
+			case 's':
+				splitcc = true;
+				break;
+			case 'm':
+				morethan = atoi(optarg);
+				break;
+			case 'l':
+				lessthan = atoi(optarg);
+				break;
+			case 't':
+				total = atoi(optarg);
+				break;
+			default:
+				usage(argv[0]);
 		}
 	}
-	if (argc - optind < 1)
-		usage(argv[0]);
+	if (argc - optind < 1) usage(argv[0]);
 	infilename = argv[optind];
-	if (argc - optind >= 2)
-		outfilename = argv[optind+1];
+	if (argc - optind >= 2) outfilename = argv[optind + 1];
 
 	// Read input file
-	TriMesh *in = TriMesh::read(infilename);
+	auto in = TriMesh::read(infilename);
 	if (!in) {
 		fprintf(stderr, "Couldn't read input %s\n", infilename);
 		exit(1);
@@ -112,43 +113,38 @@ int main(int argc, char *argv[])
 	// Find connected components
 	vector<int> comps;
 	vector<int> compsizes;
-	find_comps(in, comps, compsizes, conn_vert);
+	find_comps(in.get(), comps, compsizes, conn_vert);
 
 	// Print out the top few components
 	print_comps(compsizes, morethan, lessthan, total, nprint);
 
 	// Exit here if just printing things out, and not saving anything
-	if (!outfilename)
-		exit(0);
+	if (!outfilename) exit(0);
 
 	// Get rid of the junk we don't want...
 	if (lessthan != BIGNUM) {
-		select_small_comps(in, comps, compsizes, lessthan,
-			morethan != 0 ? BIGNUM : total);
-		find_comps(in, comps, compsizes, conn_vert);
+		select_small_comps(in.get(), comps, compsizes, lessthan, morethan != 0 ? BIGNUM : total);
+		find_comps(in.get(), comps, compsizes, conn_vert);
 	}
 	if (morethan != 0 || (lessthan == BIGNUM && total != BIGNUM)) {
-		select_big_comps(in, comps, compsizes, morethan, total);
-		find_comps(in, comps, compsizes, conn_vert);
+		select_big_comps(in.get(), comps, compsizes, morethan, total);
+		find_comps(in.get(), comps, compsizes, conn_vert);
 	}
 
 	if (splitcc) {
 		// Split into separate files, if requested
 		int ncomps = compsizes.size();
 		for (int i = 0; i < ncomps; i++) {
-			TriMesh *tmp = new TriMesh(*in);
-			select_comp(tmp, comps, i);
-			if (had_tstrips)
-				tmp->need_tstrips();
+			auto tmp = std::make_unique<TriMesh>(*in);
+			select_comp(tmp.get(), comps, i);
+			if (had_tstrips) tmp->need_tstrips();
 			char filename[1024];
-			sprintf(filename, "cc%d-%s", i+1, outfilename);
+			sprintf(filename, "cc%d-%s", i + 1, outfilename);
 			tmp->write(filename);
-			delete tmp;
 		}
 	} else {
 		// Write the requested components to a file
-		if (had_tstrips)
-			in->need_tstrips();
+		if (had_tstrips) in->need_tstrips();
 		in->write(outfilename);
 	}
 }

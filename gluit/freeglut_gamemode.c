@@ -162,7 +162,7 @@ GLboolean fghPlatformChangeDisplayMode(GLboolean haveToTest, DEVMODE *devModeReq
 {
     GLboolean success = GL_FALSE;
     DEVMODE  devModeCurrent;
-    char *fggmstr = NULL;
+    char *fggmstr = nullptr;
     char displayMode[300];
 
     /* Get current display mode */
@@ -195,7 +195,7 @@ GLboolean fghPlatformChangeDisplayMode(GLboolean haveToTest, DEVMODE *devModeReq
 
 
     /* Ok, we do have a mode switch to perform/test */
-    switch ( ChangeDisplaySettingsEx(fgDisplay.DisplayName, devModeRequested, NULL, haveToTest ? CDS_TEST : CDS_FULLSCREEN , NULL) )
+    switch ( ChangeDisplaySettingsEx(fgDisplay.DisplayName, devModeRequested, nullptr, haveToTest ? CDS_TEST : CDS_FULLSCREEN , nullptr) )
     {
     case DISP_CHANGE_SUCCESSFUL:
         success = GL_TRUE;
@@ -704,7 +704,7 @@ int FGAPIENTRY glutEnterGameMode( void )
     }
 
     fgStructure.GameModeWindow = fgCreateWindow(
-        NULL, "FREEGLUT", GL_TRUE, 0, 0,
+        nullptr, "FREEGLUT", GL_TRUE, 0, 0,
         GL_TRUE, fgState.GameModeSize.X, fgState.GameModeSize.Y,
         GL_TRUE, GL_FALSE
     );
@@ -814,7 +814,7 @@ void FGAPIENTRY glutLeaveGameMode( void )
     freeglut_return_if_fail( fgStructure.GameModeWindow );
 
     fgAddToWindowDestroyList( fgStructure.GameModeWindow );
-    fgStructure.GameModeWindow = NULL;
+    fgStructure.GameModeWindow = nullptr;
 
 #if TARGET_HOST_POSIX_X11
 

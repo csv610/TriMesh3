@@ -60,9 +60,10 @@ ctest
 ```cpp
 #include "TriMesh.h"
 #include <iostream>
+#include <memory>
 
 int main() {
-    trimesh::TriMesh *mesh = trimesh::TriMesh::read("model.obj");
+    auto mesh = std::unique_ptr<trimesh::TriMesh>(trimesh::TriMesh::read("model.obj"));
     if (!mesh) {
         std::cerr << "Error reading mesh" << std::endl;
         return 1;
@@ -71,7 +72,6 @@ int main() {
     mesh->need_normals();
     std::cout << "Mesh has " << mesh->vertices.size() << " vertices." << std::endl;
 
-    delete mesh;
     return 0;
 }
 ```

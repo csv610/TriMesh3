@@ -109,7 +109,7 @@ static void send_dial_event(int dial, int value);
 static void poll_dials(int id);
 
 /* local variables */
-static SERIALPORT *dialbox_port=NULL;
+static SERIALPORT *dialbox_port=nullptr;
 
 /*****************************************************************/
 
@@ -136,7 +136,7 @@ void fgInitialiseInputDevices ( void )
 {
     if( !fgState.InputDevsInitialised )
     {
-        const char *dial_device=NULL;
+        const char *dial_device=nullptr;
         dial_device = getenv ( "GLUT_DIALS_SERIAL" );
 #if TARGET_HOST_MS_WINDOWS
         if (!dial_device){
@@ -145,7 +145,7 @@ void fgInitialiseInputDevices ( void )
             DWORD type = REG_SZ;
             HKEY key;
             if (RegOpenKeyA(HKEY_LOCAL_MACHINE,"SOFTWARE\\FreeGLUT",&key)==ERROR_SUCCESS) {
-                if (RegQueryValueExA(key,"DialboxSerialPort",NULL,&type,(LPBYTE)devname,&size)==ERROR_SUCCESS){
+                if (RegQueryValueExA(key,"DialboxSerialPort",nullptr,&type,(LPBYTE)devname,&size)==ERROR_SUCCESS){
                     dial_device=devname;
                 }
                 RegCloseKey(key);
@@ -168,7 +168,7 @@ void fgInputDeviceClose( void )
     if ( fgState.InputDevsInitialised )
     {
         serial_close ( dialbox_port );
-        dialbox_port = NULL;
+        dialbox_port = nullptr;
         fgState.InputDevsInitialised = GL_FALSE;
     }
 }
@@ -256,7 +256,7 @@ static SERIALPORT *serial_open ( const char *device )
     fd = open(device, O_RDWR | O_NONBLOCK );
     if (fd <0) {
         perror(device);
-        return NULL;
+        return nullptr;
     }
 
     port = malloc(sizeof(SERIALPORT));
@@ -317,9 +317,9 @@ static SERIALPORT *serial_open(const char *device){
     COMMTIMEOUTS timeouts;
     SERIALPORT *port;
 
-    fh = CreateFile(device,GENERIC_READ|GENERIC_WRITE,0,NULL,
-      OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-    if (!fh) return NULL;
+    fh = CreateFile(device,GENERIC_READ|GENERIC_WRITE,0,nullptr,
+      OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+    if (!fh) return nullptr;
 
     port = malloc(sizeof(SERIALPORT));
     ZeroMemory(port, sizeof(SERIALPORT));
@@ -357,7 +357,7 @@ static int serial_getchar(SERIALPORT *port){
     DWORD n;
     unsigned char ch;
     if (!port) return EOF;
-    if (!ReadFile(port->fh,&ch,1,&n,NULL)) return EOF;
+    if (!ReadFile(port->fh,&ch,1,&n,nullptr)) return EOF;
     if (n==1) return ch;
     return EOF;
 }
@@ -365,7 +365,7 @@ static int serial_getchar(SERIALPORT *port){
 static int serial_putchar(SERIALPORT *port, unsigned char ch){
     DWORD n;
     if (!port) return 0;
-    return WriteFile(port->fh,&ch,1,&n,NULL);
+    return WriteFile(port->fh,&ch,1,&n,nullptr);
 }
 
 static void serial_flush ( SERIALPORT *port )

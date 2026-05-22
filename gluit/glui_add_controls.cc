@@ -54,7 +54,7 @@ GLUI_Checkbox   *GLUI::add_checkbox_to_panel( GLUI_Panel *panel,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -81,8 +81,8 @@ int    GLUI_Main::add_control( GLUI_Node *parent, GLUI_Control *control )
       /** Swap the children back out ***/
       parent_control->collapsed_node.child_head = parent_control->child_head;
       parent_control->collapsed_node.child_tail = parent_control->child_tail;
-      parent_control->child_head = NULL;
-      parent_control->child_tail = NULL;
+      parent_control->child_head = nullptr;
+      parent_control->child_tail = nullptr;
     }
     else {
       control->link_this_to_parent_last( parent );
@@ -134,7 +134,7 @@ GLUI_Panel     *GLUI::add_panel_to_panel( GLUI_Panel *parent_panel,
     return panel;
   }
   else {
-    return NULL;
+    return nullptr;
   }  
 }
 
@@ -182,7 +182,7 @@ GLUI_RadioGroup *GLUI::add_radiogroup_to_panel(  GLUI_Panel *panel,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -198,7 +198,7 @@ GLUI_RadioButton *GLUI::add_radiobutton_to_group(  GLUI_RadioGroup *group,
   if ( group->type != GLUI_CONTROL_RADIOGROUP ) {
     /*fprintf( stderr, "ERROR: Trying to add radiobutton to non-radiogroup\n" );              */
     /*fflush( stderr );              */
-    return NULL;
+    return nullptr;
   }
 
   control = new GLUI_RadioButton;
@@ -225,7 +225,7 @@ GLUI_RadioButton *GLUI::add_radiobutton_to_group(  GLUI_RadioGroup *group,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -255,7 +255,7 @@ add_statictext_to_panel( GLUI_Panel *panel, const char *name )
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -297,7 +297,7 @@ GLUI_Button   *GLUI::add_button_to_panel( GLUI_Panel *panel,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -358,17 +358,17 @@ add_edittext_to_panel( GLUI_Panel *panel, const char *name,
     }
     else if ( data_type == GLUI_EDITTEXT_INT ) {
       control->live_type = GLUI_LIVE_INT;
-      if ( data == NULL )
+      if ( data == nullptr )
     control->set_int_val(control->int_val);   /** Set to some default, in case of no live var **/
     }
     else if ( data_type == GLUI_EDITTEXT_FLOAT ) {
       control->live_type = GLUI_LIVE_FLOAT;
       control->num_periods = 1;
-      if ( data == NULL )
+      if ( data == nullptr )
     control->set_float_val(control->float_val);   /** Set to some default, in case of no live var **/
     }
     else {
-      return NULL;   /* Did not pass in a valid data type */
+      return nullptr;   /* Did not pass in a valid data type */
     }
 
     add_control( panel, control );
@@ -378,7 +378,7 @@ add_edittext_to_panel( GLUI_Panel *panel, const char *name,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -417,7 +417,7 @@ add_spinner_to_panel( GLUI_Panel *panel, const char *name,
       /*      control->live_type = GLUI_LIVE_FLOAT;              */
     }
     else {
-      return NULL;   /* Did not pass in a valid data type */
+      return nullptr;   /* Did not pass in a valid data type */
     }
 
     GLUI_EditText *edittext = 
@@ -439,11 +439,11 @@ add_spinner_to_panel( GLUI_Panel *panel, const char *name,
       return control;
     }
     else {
-      return NULL;
+      return nullptr;
     }
   }
   else {
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -507,7 +507,7 @@ GLUI_Listbox   *GLUI::add_listbox_to_panel( GLUI_Panel *panel,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -544,7 +544,7 @@ GLUI_Rotation   *GLUI::add_rotation_to_panel( GLUI_Panel *panel,
     /*** Init the live 4x4 matrix.  This is different than the standard
       live variable behavior, since the original value of the 4x4 matrix
       is ignored and reset to Identity  ***/
-    if ( value_ptr != NULL ) {
+    if ( value_ptr != nullptr ) {
       int i, j, index;
       for( i=0; i<4; i++ ) {
     for( j=0; j<4; j++ ) {
@@ -562,7 +562,7 @@ GLUI_Rotation   *GLUI::add_rotation_to_panel( GLUI_Panel *panel,
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -607,7 +607,7 @@ GLUI_Slider   *GLUI::add_slider_to_panel(
     
 		if ( data_type == GLUI_SLIDER_INT ) {
 			control->set_int_limits((int)lo, (int)hi);
-			if ( data == NULL )
+			if ( data == nullptr )
 			{
 				control->set_int_val(control->int_low);   
 				control->live_type = GLUI_LIVE_NONE;
@@ -617,7 +617,7 @@ GLUI_Slider   *GLUI::add_slider_to_panel(
 		}
 		else if ( data_type == GLUI_SLIDER_FLOAT ) {
 			control->set_float_limits(lo,hi);
-			if ( data == NULL )
+			if ( data == nullptr )
 			{
 				control->set_float_val(control->float_low);   
 				control->live_type = GLUI_LIVE_NONE;
@@ -627,7 +627,7 @@ GLUI_Slider   *GLUI::add_slider_to_panel(
 		}
 		else {
 			delete control;
-			return NULL;   
+			return nullptr;   
 		}
 
 		add_control( panel, control );
@@ -642,7 +642,7 @@ GLUI_Slider   *GLUI::add_slider_to_panel(
 		return control;
 	}
 	else {
-		return NULL;
+		return nullptr;
 	}
 
 }
@@ -697,7 +697,7 @@ GLUI_Translation
     return control;
   }
   else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -733,6 +733,6 @@ GLUI_Rollout *GLUI::add_rollout_to_panel(GLUI_Panel *panel,const char *name,int 
     return rollout;
   }
   else {
-    return NULL;
+    return nullptr;
   }  
 }

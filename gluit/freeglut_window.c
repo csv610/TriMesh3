@@ -294,7 +294,7 @@ GLXFBConfig* fgChooseFBConfig( int *numcfgs )
                                            attributes,
                                            &fbconfigArraySize );
 
-        if (fbconfigArray != NULL)
+        if (fbconfigArray != nullptr)
         {
 
             if( wantIndexedMode )
@@ -366,7 +366,7 @@ GLXFBConfig* fgChooseFBConfig( int *numcfgs )
              *
              * However, for some configurations (for instance multisampling with
              * Mesa 6.5.2 and ATI drivers), this does not work:
-             * glXChooseFBConfig returns NULL, whereas fbconfigXID is a valid
+             * glXChooseFBConfig returns nullptr, whereas fbconfigXID is a valid
              * XID.  Further investigation is needed.
              *
              * So, for now, we return the whole array of FBConfigs.  This should
@@ -376,7 +376,7 @@ GLXFBConfig* fgChooseFBConfig( int *numcfgs )
         }
         else
         {
-           fbconfig = NULL;
+           fbconfig = nullptr;
         }
 
 	if (numcfgs)
@@ -424,7 +424,7 @@ static GLXContext fghCreateNewContext( SFG_Window* window )
   Display *dpy = fgDisplay.Display;
   GLXFBConfig config = *(window->Window.FBConfig);
   int render_type = ( !menu && index_mode ) ? GLX_COLOR_INDEX_TYPE : GLX_RGBA_TYPE;
-  GLXContext share_list = NULL;
+  GLXContext share_list = nullptr;
   Bool direct = ( fgState.DirectContext != GLUT_FORCE_INDIRECT_CONTEXT );
   GLXContext context;
 
@@ -443,7 +443,7 @@ static GLXContext fghCreateNewContext( SFG_Window* window )
   if ( fghIsLegacyContextRequested() || !createContextAttribs )
   {
     context = glXCreateNewContext( dpy, config, render_type, share_list, direct );
-    if ( context == NULL ) {
+    if ( context == nullptr ) {
       fghContextCreationError();
     }
     return context;
@@ -457,7 +457,7 @@ static GLXContext fghCreateNewContext( SFG_Window* window )
   fghFillContextAttributes( attributes );
 
   context = createContextAttribs( dpy, config, share_list, direct, attributes );
-  if ( context == NULL ) {
+  if ( context == nullptr ) {
     fghContextCreationError();
   }
   return context;
@@ -584,12 +584,12 @@ static int fghIsExtensionSupported( HDC hdc, const char *extension ) {
     const char *pWglExtString;
     PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetEntensionsStringARB =
       (PFNWGLGETEXTENSIONSSTRINGARBPROC) wglGetProcAddress("wglGetExtensionsStringARB");
-    if ( wglGetEntensionsStringARB == NULL )
+    if ( wglGetEntensionsStringARB == nullptr )
     {
       return FALSE;
     }
     pWglExtString = wglGetEntensionsStringARB( hdc );
-    return ( pWglExtString != NULL ) && ( strstr(pWglExtString, extension) != NULL );
+    return ( pWglExtString != nullptr ) && ( strstr(pWglExtString, extension) != nullptr );
 }
 
 void fgNewWGLCreateContext( SFG_Window* window )
@@ -618,7 +618,7 @@ void fgNewWGLCreateContext( SFG_Window* window )
     fghFillContextAttributes( attributes );
 
     wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC) wglGetProcAddress( "wglCreateContextAttribsARB" );
-    if ( wglCreateContextAttribsARB == NULL )
+    if ( wglCreateContextAttribsARB == nullptr )
     {
         /* wglCreateContextAttribsARB not found, yet the user has requested the new context creation */
         fgWarning( "OpenGL >2.1 context requested but wglCreateContextAttribsARB is not available! Falling back to legacy context creation" );
@@ -627,12 +627,12 @@ void fgNewWGLCreateContext( SFG_Window* window )
     }
 
     context = wglCreateContextAttribsARB( window->Window.Device, 0, attributes );
-    if ( context == NULL )
+    if ( context == nullptr )
     {
         fghContextCreationError();
     }
 
-    wglMakeCurrent( NULL, NULL );
+    wglMakeCurrent( nullptr, nullptr );
     wglDeleteContext( window->Window.Context );
     window->Window.Context = context;
 }
@@ -735,7 +735,7 @@ GLboolean fgSetupPixelFormat( SFG_Window* window, GLboolean checkOnly,
     GLboolean success;
 
     if (checkOnly)
-      current_hDC = CreateDC(TEXT("DISPLAY"), NULL ,NULL ,NULL);
+      current_hDC = CreateDC(TEXT("DISPLAY"), nullptr ,nullptr ,nullptr);
     else
       current_hDC = window->Window.Device;
 
@@ -858,7 +858,7 @@ void fghGetDefaultWindowStyle(DWORD *flags)
 }
 
 /* Get window style and extended window style of a FreeGLUT window
-* If the window pointer or the window handle is NULL, a fully
+* If the window pointer or the window handle is nullptr, a fully
 * decorated window (caption and border) is assumed.
 */
 void fghGetStyleFromWindow( const SFG_Window *window, DWORD *windowStyle, DWORD *windowExStyle )
@@ -911,7 +911,7 @@ void fghComputeWindowRectFromClientArea_UseStyle( RECT *clientRect, const DWORD 
 /* Computes position of corners of window Rect (outer position including
 * decorations) based on the provided client rect and based on the style
 * of the window in question. If the window pointer or the window handle
-* is NULL, a fully decorated window (caption and border) is assumed.
+* is nullptr, a fully decorated window (caption and border) is assumed.
 * Furthermore, if posIsOutside is set to true, the input client Rect is
 * taken to follow freeGLUT's window specification convention in which the
 * top-left corner is at the outside of the window, while the size
@@ -929,7 +929,7 @@ void fghComputeWindowRectFromClientArea_QueryWindow( RECT *clientRect, const SFG
 
 /* Gets the rect describing the client area (drawable area) of the
 * specified window. Output is position of corners of client area (drawable area) on the screen.
-* Returns an empty rect if window pointer or window handle is NULL.
+* Returns an empty rect if window pointer or window handle is nullptr.
 * If wantPosOutside is set to true, the output client Rect
 * will follow freeGLUT's window specification convention in which the
 * top-left corner is at the outside of the window, while the size
@@ -1060,7 +1060,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
                    GLboolean gameMode, GLboolean isSubWindow )
 {
 #if TARGET_HOST_POSIX_X11
-    XVisualInfo * visualInfo = NULL;
+    XVisualInfo * visualInfo = nullptr;
     XSetWindowAttributes winAttr;
     XTextProperty textProperty;
     XSizeHints sizeHints;
@@ -1102,7 +1102,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
         }
     }
 
-    FREEGLUT_INTERNAL_ERROR_EXIT( window->Window.FBConfig != NULL,
+    FREEGLUT_INTERNAL_ERROR_EXIT( window->Window.FBConfig != nullptr,
                                   "FBConfig with necessary capabilities not found", "fgOpenWindow" );
 
     /*  Get the X visual.  */
@@ -1113,7 +1113,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
 		break;
     }
 
-    FREEGLUT_INTERNAL_ERROR_EXIT( visualInfo != NULL,
+    FREEGLUT_INTERNAL_ERROR_EXIT( visualInfo != nullptr,
                                   "visualInfo could not be retrieved from FBConfig", "fgOpenWindow" );
 
     /*
@@ -1155,7 +1155,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
 
     window->Window.Handle = XCreateWindow(
         fgDisplay.Display,
-        window->Parent == NULL ? fgDisplay.RootWindow :
+        window->Parent == nullptr ? fgDisplay.RootWindow :
         window->Parent->Window.Handle,
         x, y, w, h, 0,
         visualInfo->depth, InputOutput,
@@ -1254,7 +1254,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
         0,
         &sizeHints,
         &wmHints,
-        NULL
+        nullptr
     );
     XFree( textProperty.value );
 
@@ -1295,7 +1295,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
     /* Determine window style flags*/
     if( gameMode )
     {
-        FREEGLUT_INTERNAL_ERROR_EXIT ( window->Parent == NULL,
+        FREEGLUT_INTERNAL_ERROR_EXIT ( window->Parent == nullptr,
                                        "Game mode being invoked on a subwindow",
                                        "fgOpenWindow" );
 
@@ -1322,7 +1322,7 @@ void fgOpenWindow( SFG_Window* window, const char* title,
         /* no decorations for windows CE */
 #else
         /* if this is not a subwindow (child), set its style based on the requested display mode */
-        else if( window->Parent == NULL )
+        else if( window->Parent == nullptr )
             fghGetDefaultWindowStyle(&flags);
 #endif
         else
@@ -1397,8 +1397,8 @@ void fgOpenWindow( SFG_Window* window, const char* title,
             wstr,
             WS_VISIBLE | WS_POPUP,
             0,0, 240,320,
-            NULL,
-            NULL,
+            nullptr,
+            nullptr,
             fgDisplay.Instance,
             (LPVOID) window
         );
@@ -1419,8 +1419,8 @@ void fgOpenWindow( SFG_Window* window, const char* title,
         title,
         flags,
         x, y, w, h,
-        (HWND) window->Parent == NULL ? NULL : window->Parent->Window.Handle,
-        (HMENU) NULL,
+        (HWND) window->Parent == nullptr ? nullptr : window->Parent->Window.Handle,
+        (HMENU) nullptr,
         fgDisplay.Instance,
         (LPVOID) window
     );
@@ -1485,7 +1485,7 @@ void fgCloseWindow( SFG_Window* window )
      * call glutLeaveGameMode first to make sure the gamemode is
      * properly closed before closing the window
      */
-    if (fgStructure.GameModeWindow != NULL && fgStructure.GameModeWindow->ID==window->ID)
+    if (fgStructure.GameModeWindow != nullptr && fgStructure.GameModeWindow->ID==window->ID)
         glutLeaveGameMode();
 
 #if TARGET_HOST_POSIX_X11
@@ -1503,7 +1503,7 @@ void fgCloseWindow( SFG_Window* window )
 
     /* Make sure we don't close a window with current context active */
     if( fgStructure.CurrentWindow == window )
-        wglMakeCurrent( NULL, NULL );
+        wglMakeCurrent( nullptr, nullptr );
 
     /*
      * Step through the list of windows.  If the rendering context
@@ -1546,7 +1546,7 @@ int FGAPIENTRY glutCreateWindow( const char* title )
      */
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateWindow" );
 
-    return fgCreateWindow( NULL, title, fgState.Position.Use,
+    return fgCreateWindow( nullptr, title, fgState.Position.Use,
                            fgState.Position.X, fgState.Position.Y,
                            fgState.Size.Use, fgState.Size.X, fgState.Size.Y,
                            GL_FALSE, GL_FALSE )->ID;
@@ -1566,12 +1566,12 @@ int FGAPIENTRY __glutCreateWindowWithExit( const char *title, void (__cdecl *exi
 int FGAPIENTRY glutCreateSubWindow( int parentID, int x, int y, int w, int h )
 {
     int ret = 0;
-    SFG_Window* window = NULL;
-    SFG_Window* parent = NULL;
+    SFG_Window* window = nullptr;
+    SFG_Window* parent = nullptr;
 
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateSubWindow" );
     parent = fgWindowByID( parentID );
-    freeglut_return_val_if_fail( parent != NULL, 0 );
+    freeglut_return_val_if_fail( parent != nullptr, 0 );
     if ( x < 0 )
     {
         x = parent->State.Width + x ;
@@ -1612,7 +1612,7 @@ void FGAPIENTRY glutDestroyWindow( int windowID )
     SFG_Window* window;
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutDestroyWindow" );
     window = fgWindowByID( windowID );
-    freeglut_return_if_fail( window != NULL );
+    freeglut_return_if_fail( window != nullptr );
     {
         fgExecutionState ExecState = fgState.ExecState;
         fgAddToWindowDestroyList( window );
@@ -1625,15 +1625,15 @@ void FGAPIENTRY glutDestroyWindow( int windowID )
  */
 void FGAPIENTRY glutSetWindow( int ID )
 {
-    SFG_Window* window = NULL;
+    SFG_Window* window = nullptr;
 
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutSetWindow" );
-    if( fgStructure.CurrentWindow != NULL )
+    if( fgStructure.CurrentWindow != nullptr )
         if( fgStructure.CurrentWindow->ID == ID )
             return;
 
     window = fgWindowByID( ID );
-    if( window == NULL )
+    if( window == nullptr )
     {
         fgWarning( "glutSetWindow(): window ID %d not found!", ID );
         return;
@@ -1693,7 +1693,7 @@ void FGAPIENTRY glutHideWindow( void )
 
 #if TARGET_HOST_POSIX_X11
 
-    if( fgStructure.CurrentWindow->Parent == NULL )
+    if( fgStructure.CurrentWindow->Parent == nullptr )
         XWithdrawWindow( fgDisplay.Display,
                          fgStructure.CurrentWindow->Window.Handle,
                          fgDisplay.Screen );
@@ -1946,7 +1946,7 @@ void FGAPIENTRY glutFullScreen( void )
         fgWarning("glutFullScreen called on a child window, ignoring...");
         return;
     }
-    else if (fgStructure.GameModeWindow != NULL && fgStructure.GameModeWindow->ID==win->ID)
+    else if (fgStructure.GameModeWindow != nullptr && fgStructure.GameModeWindow->ID==win->ID)
     {
         /* Ignore fullscreen call on GameMode window, those are always fullscreen already */
         return;

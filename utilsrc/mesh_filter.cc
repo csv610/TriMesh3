@@ -6,44 +6,38 @@ mesh_filter.cc
 Apply a variety of tranformations to a mesh
 */
 
-#include "TriMesh.h"
-#include "TriMesh_algo.h"
-#include "XForm.h"
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cctype>
+#include <memory>
+
+#include "TriMesh.h"
+#include "TriMesh_algo.h"
+#include "XForm.h"
 using namespace std;
 using namespace trimesh;
 
 #define ATOF(x) ((float) atof(x))
 
-
 // Is this argument a floating-point number?
-static bool isanumber(const char *c)
-{
-	if (!c || !*c)
-		return false;
-	char *endptr;
+static bool isanumber(const char* c) {
+	if (!c || !*c) return false;
+	char* endptr;
 	strtod(c, &endptr);
 	return (endptr && *endptr == '\0');
 }
 
-
 // Is this argument an integer?
-static bool isanint(const char *c)
-{
-	if (!c || !*c)
-		return false;
-	char *endptr;
+static bool isanint(const char* c) {
+	if (!c || !*c) return false;
+	char* endptr;
 	strtol(c, &endptr, 10);
 	return (endptr && *endptr == '\0');
 }
 
-
 // Transform the mesh by a matrix read from a file
-void apply_xform(TriMesh *mesh, const char *xffilename)
-{
+void apply_xform(TriMesh* mesh, const char* xffilename) {
 	xform xf;
 	if (!xf.read(xffilename))
 		fprintf(stderr, "Couldn't open %s\n", xffilename);
@@ -51,10 +45,8 @@ void apply_xform(TriMesh *mesh, const char *xffilename)
 		apply_xform(mesh, xf);
 }
 
-
 // Transform the mesh by inverse of a matrix read from a file
-void apply_ixform(TriMesh *mesh, const char *xffilename)
-{
+void apply_ixform(TriMesh* mesh, const char* xffilename) {
 	xform xf;
 	if (!xf.read(xffilename)) {
 		fprintf(stderr, "Couldn't open %s\n", xffilename);
@@ -64,10 +56,8 @@ void apply_ixform(TriMesh *mesh, const char *xffilename)
 	}
 }
 
-
 // Clip mesh to the given bounding box file
-bool clip(TriMesh *mesh, const char *bboxfilename)
-{
+bool clip(TriMesh* mesh, const char* bboxfilename) {
 	box b;
 	if (!b.read(bboxfilename)) {
 		fprintf(stderr, "Couldn't read bounding box %s\n", bboxfilename);
@@ -78,9 +68,7 @@ bool clip(TriMesh *mesh, const char *bboxfilename)
 	return true;
 }
 
-
-void usage(const char *myname)
-{
+void usage(const char* myname) {
 	fprintf(stderr, "Usage: %s infile [options] [outfile]\n", myname);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "	-color		Add per-vertex color\n");
@@ -129,30 +117,26 @@ void usage(const char *myname)
 	exit(1);
 }
 
-int main(int argc, char *argv[])
-{
-	if (argc < 3)
-		usage(argv[0]);
-	const char *filename = argv[1];
+int main(int argc, char* argv[]) {
+	if (argc < 3) usage(argv[0]);
+	const char* filename = argv[1];
 
-	TriMesh *themesh = TriMesh::read(filename);
-	if (!themesh)
-		usage(argv[0]);
+	auto themesh_ptr = TriMesh::read(filename);
+	if (!themesh_ptr) usage(argv[0]);
+	TriMesh* themesh = themesh_ptr.get();
 
 	bool have_tstrips = !themesh->tstrips.empty();
 	for (int i = 2; i < argc; i++) {
-		if (!strcmp(argv[i], "-color") ||
-		    !strcmp(argv[i], "-colors")) {
+		if (!strcmp(argv[i], "-color") || !strcmp(argv[i], "-colors")) {
 			if (themesh->colors.empty()) {
 				int nv = themesh->vertices.size();
 				themesh->colors.resize(nv, Color::white());
 			}
-		} else if (!strcmp(argv[i], "-nocolor") ||
-		           !strcmp(argv[i], "-nocolors")) {
+		} else if (!strcmp(argv[i], "-nocolor") || !strcmp(argv[i], "-nocolors")) {
 			themesh->colors.clear();
 		} else if (!strcmp(argv[i], "-conf")) {
-			if (isanumber(argv[i+1])) {
-				float desired_conf = ATOF(argv[i+1]);
+			if (isanumber(argv[i + 1])) {
+				float desired_conf = ATOF(argv[i + 1]);
 				int nv = themesh->vertices.size();
 				themesh->confidences.clear();
 				themesh->confidences.resize(nv, desired_conf);
@@ -163,17 +147,13 @@ int main(int argc, char *argv[])
 			}
 		} else if (!strcmp(argv[i], "-noconf")) {
 			themesh->confidences.clear();
-		} else if (!strcmp(argv[i], "-tstrip") ||
-		           !strcmp(argv[i], "-tstrips") ||
-		           !strcmp(argv[i], "-strip") ||
-		           !strcmp(argv[i], "-strips")) {
+		} else if (!strcmp(argv[i], "-tstrip") || !strcmp(argv[i], "-tstrips") || !strcmp(argv[i], "-strip") ||
+			   !strcmp(argv[i], "-strips")) {
 			themesh->need_tstrips();
 			have_tstrips = true;
-		} else if (!strcmp(argv[i], "-notstrip") ||
-		           !strcmp(argv[i], "-notstrips") ||
-		           !strcmp(argv[i], "-nostrip") ||
-		           !strcmp(argv[i], "-nostrips") ||
-		           !strcmp(argv[i], "-unstrip")) {
+		} else if (!strcmp(argv[i], "-notstrip") || !strcmp(argv[i], "-notstrips") ||
+			   !strcmp(argv[i], "-nostrip") || !strcmp(argv[i], "-nostrips") ||
+			   !strcmp(argv[i], "-unstrip")) {
 			themesh->need_faces();
 			themesh->tstrips.clear();
 			have_tstrips = false;
@@ -240,8 +220,7 @@ int main(int argc, char *argv[])
 			vector<point> origverts = themesh->vertices;
 			smooth_mesh(themesh, amount);
 			for (size_t v = 0; v < themesh->vertices.size(); v++)
-				themesh->vertices[v] += 2.0f *
-					(origverts[v] - themesh->vertices[v]);
+				themesh->vertices[v] += 2.0f * (origverts[v] - themesh->vertices[v]);
 			themesh->pointareas.clear();
 			themesh->normals.clear();
 		} else if (!strcmp(argv[i], "-smoothnorm")) {
@@ -259,8 +238,7 @@ int main(int argc, char *argv[])
 				usage(argv[0]);
 			}
 			int niters = atoi(argv[i]);
-			for (int iter = 0; iter < niters; iter++)
-				umbrella(themesh, 0.5f);
+			for (int iter = 0; iter < niters; iter++) umbrella(themesh, 0.5f);
 		} else if (!strcmp(argv[i], "-tsmooth")) {
 			i++;
 			if (!(i < argc && isanint(argv[i]))) {
@@ -268,8 +246,7 @@ int main(int argc, char *argv[])
 				usage(argv[0]);
 			}
 			int niters = atoi(argv[i]);
-			for (int iter = 0; iter < niters; iter++)
-				umbrella(themesh, 0.5f, true);
+			for (int iter = 0; iter < niters; iter++) umbrella(themesh, 0.5f, true);
 		} else if (!strcmp(argv[i], "-lmsmooth")) {
 			i++;
 			if (!(i < argc && isanint(argv[i]))) {
@@ -285,8 +262,7 @@ int main(int argc, char *argv[])
 				usage(argv[0]);
 			}
 			int niters = atoi(argv[i]);
-			for (int iter = 0; iter < niters; iter++)
-				numbrella(themesh, 0.5f);
+			for (int iter = 0; iter < niters; iter++) numbrella(themesh, 0.5f);
 		} else if (!strcmp(argv[i], "-inflate")) {
 			i++;
 			if (!(i < argc && isanumber(argv[i]))) {
@@ -317,54 +293,45 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "\n-clip requires one argument\n\n");
 				usage(argv[0]);
 			}
-			if (!clip(themesh, argv[i]))
-				usage(argv[0]);
-		} else if (!strcmp(argv[i], "-xf") ||
-		           !strcmp(argv[i], "-xform")) {
+			if (!clip(themesh, argv[i])) usage(argv[0]);
+		} else if (!strcmp(argv[i], "-xf") || !strcmp(argv[i], "-xform")) {
 			i++;
 			if (!(i < argc)) {
 				fprintf(stderr, "\n-xform requires one argument\n\n");
 				usage(argv[0]);
 			}
 			apply_xform(themesh, argv[i]);
-		} else if (!strcmp(argv[i], "-ixf") ||
-		           !strcmp(argv[i], "-ixform")) {
+		} else if (!strcmp(argv[i], "-ixf") || !strcmp(argv[i], "-ixform")) {
 			i++;
 			if (!(i < argc)) {
 				fprintf(stderr, "\n-ixform requires one argument\n\n");
 				usage(argv[0]);
 			}
 			apply_ixform(themesh, argv[i]);
-		} else if (!strcmp(argv[i], "-rot") ||
-		           !strcmp(argv[i], "-rotate")) {
+		} else if (!strcmp(argv[i], "-rot") || !strcmp(argv[i], "-rotate")) {
 			i += 4;
-			if (!(i < argc &&
-			      isanumber(argv[i]) && isanumber(argv[i-1]) &&
-			      isanumber(argv[i-2]) && isanumber(argv[i-3]))) {
+			if (!(i < argc && isanumber(argv[i]) && isanumber(argv[i - 1]) && isanumber(argv[i - 2]) &&
+			      isanumber(argv[i - 3]))) {
 				fprintf(stderr, "\n-rot requires four arguments\n\n");
 				usage(argv[0]);
 			}
-			vec ax(ATOF(argv[i-2]), ATOF(argv[i-1]), ATOF(argv[i]));
-			float ang = radians(ATOF(argv[i-3]));
+			vec ax(ATOF(argv[i - 2]), ATOF(argv[i - 1]), ATOF(argv[i]));
+			float ang = radians(ATOF(argv[i - 3]));
 			rot(themesh, ang, ax);
-		} else if (!strcmp(argv[i], "-trans") ||
-		           !strcmp(argv[i], "-translate")) {
+		} else if (!strcmp(argv[i], "-trans") || !strcmp(argv[i], "-translate")) {
 			i += 3;
-			if (!(i < argc && isanumber(argv[i]) &&
-			      isanumber(argv[i-1]) && isanumber(argv[i-2]))) {
+			if (!(i < argc && isanumber(argv[i]) && isanumber(argv[i - 1]) && isanumber(argv[i - 2]))) {
 				fprintf(stderr, "\n-trans requires three arguments\n\n");
 				usage(argv[0]);
 			}
-			vec t(ATOF(argv[i-2]), ATOF(argv[i-1]), ATOF(argv[i]));
+			vec t(ATOF(argv[i - 2]), ATOF(argv[i - 1]), ATOF(argv[i]));
 			trans(themesh, t);
 		} else if (!strcmp(argv[i], "-scale")) {
 			int nargs = 0;
 			float args[4];
 			while (nargs < 4) {
-				if (++i >= argc)
-					break;
-				if (!isanumber(argv[i]) ||
-				    !sscanf(argv[i], "%f", &(args[nargs]))) {
+				if (++i >= argc) break;
+				if (!isanumber(argv[i]) || !sscanf(argv[i], "%f", &(args[nargs]))) {
 					--i;
 					break;
 				}
@@ -405,10 +372,8 @@ int main(int argc, char *argv[])
 			remove_sliver_faces(themesh);
 		} else if (!strcmp(argv[i], "-erode")) {
 			erode(themesh);
-		} else if (i == argc - 1 &&
-		           (argv[i][0] != '-' || argv[i][1] == '\0')) {
-			if (have_tstrips && themesh->tstrips.empty())
-				themesh->need_tstrips();
+		} else if (i == argc - 1 && (argv[i][0] != '-' || argv[i][1] == '\0')) {
+			if (have_tstrips && themesh->tstrips.empty()) themesh->need_tstrips();
 			themesh->write(argv[i]);
 		} else {
 			fprintf(stderr, "\nUnrecognized option [%s]\n\n", argv[i]);

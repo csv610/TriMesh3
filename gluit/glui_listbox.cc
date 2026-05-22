@@ -174,7 +174,7 @@ int  GLUI_Listbox::add_item( int id, const char *new_text )
   head = (GLUI_Listbox_Item*) items_list.first_child();
   new_node->link_this_to_parent_last( &items_list );
 
-  if ( head == NULL ) {
+  if ( head == nullptr ) {
     /***   This is first item added   ***/
 
     int_val       = id+1;  /** Different than id **/
@@ -275,7 +275,7 @@ GLUI_Listbox_Item *GLUI_Listbox::get_item_ptr( const char *text )
     item = (GLUI_Listbox_Item *) item->next();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 
@@ -293,7 +293,7 @@ GLUI_Listbox_Item *GLUI_Listbox::get_item_ptr( int id )
     item = (GLUI_Listbox_Item *) item->next();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 
@@ -364,7 +364,7 @@ int    GLUI_Listbox::do_selection( int item_num )
   if ( item_num == int_val )
     return false;
 
-  sel_item = NULL;
+  sel_item = nullptr;
   item     = (GLUI_Listbox_Item *) items_list.first_child();
   while( item ) {
     if ( item->id == item_num ) {
@@ -411,7 +411,7 @@ int    GLUI_Listbox::special_handler( int key,int modifiers )
   GLUI_Listbox_Item *node, *new_node;
 
   node     = get_item_ptr( int_val );
-  new_node = NULL;
+  new_node = nullptr;
 
   if ( key == GLUT_KEY_DOWN ) {
     new_node = (GLUI_Listbox_Item*) node->next();
@@ -426,7 +426,7 @@ int    GLUI_Listbox::special_handler( int key,int modifiers )
     new_node = (GLUI_Listbox_Item*) items_list.last_child();
   }
 
-  if ( new_node != NULL AND new_node != node ) {
+  if ( new_node != nullptr AND new_node != node ) {
     node = new_node;
     set_int_val( node->id );
     execute_callback();

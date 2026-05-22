@@ -36,7 +36,7 @@
 #define SET_CALLBACK(a)                                         \
 do                                                              \
 {                                                               \
-    if( fgStructure.CurrentWindow == NULL )                     \
+    if( fgStructure.CurrentWindow == nullptr )                     \
         return;                                                 \
     SET_WCB( ( *( fgStructure.CurrentWindow ) ), a, callback ); \
 } while( 0 )
@@ -48,7 +48,7 @@ void FGAPIENTRY glutDisplayFunc( void (* callback)( void ) )
 {
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutDisplayFunc" );
     if( !callback )
-        fgError( "Fatal error in program.  NULL display callback not "
+        fgError( "Fatal error in program.  nullptr display callback not "
                  "permitted in GLUT 3.0+ or freeglut 2.0.1+" );
     SET_CALLBACK( Display );
 }
@@ -147,7 +147,7 @@ void FGAPIENTRY glutVisibilityFunc( void (* callback)( int ) )
     if( callback )
         glutWindowStatusFunc( fghVisibility );
     else
-        glutWindowStatusFunc( NULL );
+        glutWindowStatusFunc( nullptr );
 }
 
 /*

@@ -342,7 +342,7 @@ void    GLUI_EditText::disactivate( void )
     
     if ( 0 ) {
       /* THE CODE BELOW IS FROM WHEN SPINNER ALSO MAINTAINED CALLBACKS    */
-      if ( spinner == NULL ) {   /** Are we independent of a spinner?  **/  
+      if ( spinner == nullptr ) {   /** Are we independent of a spinner?  **/  
     if ( callback ) {              
       callback( this->user_id );              
     }              

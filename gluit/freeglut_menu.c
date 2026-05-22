@@ -120,9 +120,9 @@ static void fghDeactivateSubMenu( SFG_MenuEntry *menuEntry )
     glutHideWindow( );
 
     /* Forget about having that menu active anymore, now: */
-    menuEntry->SubMenu->Window->ActiveMenu = NULL;
+    menuEntry->SubMenu->Window->ActiveMenu = nullptr;
     menuEntry->SubMenu->IsActive = GL_FALSE;
-    menuEntry->SubMenu->ActiveEntry = NULL;
+    menuEntry->SubMenu->ActiveEntry = nullptr;
 
     /* Hide all submenu windows, and the root menu's window. */
     for ( subMenuIter = (SFG_MenuEntry *)menuEntry->SubMenu->Entries.First;
@@ -306,7 +306,7 @@ static GLboolean fghCheckMenuStatus( SFG_Menu* menu )
     {
         menu->Window->State.Redisplay = GL_TRUE;
         menu->ActiveEntry->IsActive = GL_FALSE;
-        menu->ActiveEntry = NULL;
+        menu->ActiveEntry = nullptr;
     }
 
     return GL_FALSE;
@@ -483,7 +483,7 @@ static void fghExecuteMenuCallback( SFG_Menu* menu )
 void fgDisplayMenu( void )
 {
     SFG_Window* window = fgStructure.CurrentWindow;
-    SFG_Menu* menu = NULL;
+    SFG_Menu* menu = nullptr;
 
     FREEGLUT_INTERNAL_ERROR_EXIT ( fgStructure.CurrentWindow, "Displaying menu in nonexistent window",
                                    "fgDisplayMenu" );
@@ -705,7 +705,7 @@ GLboolean fgCheckActiveMenu ( SFG_Window *window, int button, GLboolean pressed,
  */
 void fgDeactivateMenu( SFG_Window *window )
 {
-    SFG_Window *parent_window = NULL;
+    SFG_Window *parent_window = nullptr;
     SFG_Menu* menu;
     SFG_MenuEntry *menuEntry;
 
@@ -722,11 +722,11 @@ void fgDeactivateMenu( SFG_Window *window )
     glutHideWindow( );
 
     /* Forget about having that menu active anymore, now: */
-    menu->Window->ActiveMenu = NULL;
-    menu->ParentWindow->ActiveMenu = NULL;
-    fghSetMenuParentWindow ( NULL, menu );
+    menu->Window->ActiveMenu = nullptr;
+    menu->ParentWindow->ActiveMenu = nullptr;
+    fghSetMenuParentWindow ( nullptr, menu );
     menu->IsActive = GL_FALSE;
-    menu->ActiveEntry = NULL;
+    menu->ActiveEntry = nullptr;
 
     fgState.ActiveMenus--;
 
@@ -817,15 +817,15 @@ void fgPlatformCheckMenuDeactivate()
     * application or FreeGLUT window (if one is running multiple
     * windows). If so, close menu the active menu.
     */
-    SFG_Menu* menu = NULL;
+    SFG_Menu* menu = nullptr;
 
     if ( fgStructure.Menus.First )
         menu = fgGetActiveMenu();
 
     if ( menu )
     {
-        SFG_Window* wnd = NULL;
-        HWND hwnd = GetFocus();  /* Get window with current focus - NULL for non freeglut windows */
+        SFG_Window* wnd = nullptr;
+        HWND hwnd = GetFocus();  /* Get window with current focus - nullptr for non freeglut windows */
         if (hwnd)
             /* See which of our windows it is */
             wnd = fgWindowByHandle(hwnd);
@@ -979,7 +979,7 @@ void FGAPIENTRY glutAddSubMenu( const char *label, int subMenuID )
  */
 void FGAPIENTRY glutChangeToMenuEntry( int item, const char* label, int value )
 {
-    SFG_MenuEntry* menuEntry = NULL;
+    SFG_MenuEntry* menuEntry = nullptr;
 
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutChangeToMenuEntry" );
 
@@ -998,7 +998,7 @@ void FGAPIENTRY glutChangeToMenuEntry( int item, const char* label, int value )
 
     menuEntry->Text    = strdup( label );
     menuEntry->ID      = value;
-    menuEntry->SubMenu = NULL;
+    menuEntry->SubMenu = nullptr;
     fghCalculateMenuBoxSize( );
 }
 
@@ -1019,7 +1019,7 @@ void FGAPIENTRY glutChangeToSubMenu( int item, const char* label,
 
     /* Get handle to sub menu */
     subMenu = fgMenuByID( subMenuID );
-    menuEntry = NULL;
+    menuEntry = nullptr;
 
     freeglut_return_if_fail( subMenu );
 
@@ -1099,7 +1099,7 @@ void FGAPIENTRY glutDetachMenu( int button )
     freeglut_return_if_fail( button >= 0 );
     freeglut_return_if_fail( button < FREEGLUT_MAX_MENUS );
 
-    fgStructure.CurrentWindow->Menu[ button ] = NULL;
+    fgStructure.CurrentWindow->Menu[ button ] = nullptr;
 }
 
 /*

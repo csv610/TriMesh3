@@ -31,7 +31,7 @@ void    GLUI_Separator::draw( int x, int y )
 
   orig = set_to_glut_window();
 
-  if ( parent() != NULL ) {
+  if ( parent() != nullptr ) {
     get_this_column_dims(&cont_x, &cont_y, &cont_w, &cont_h, 
              &cont_x_off, &cont_y_off);
 

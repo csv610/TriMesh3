@@ -111,7 +111,7 @@ void FGAPIENTRY glutSetOption( GLenum eWhat, int value )
         break;
 
     case GLUT_WINDOW_CURSOR:
-        if( fgStructure.CurrentWindow != NULL )
+        if( fgStructure.CurrentWindow != nullptr )
             fgStructure.CurrentWindow->State.Cursor = value;
         break;
 
@@ -223,7 +223,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
 
     /* Colormap size is handled in a bit different way than all the rest */
     case GLUT_WINDOW_COLORMAP_SIZE:
-        if( (fghGetConfig( GLX_RGBA )) || (fgStructure.CurrentWindow == NULL) )
+        if( (fghGetConfig( GLX_RGBA )) || (fgStructure.CurrentWindow == nullptr) )
         {
             /*
              * We've got a RGBA visual, so there is no colormap at all.
@@ -258,7 +258,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
         int x, y;
         Window w;
 
-        if( fgStructure.CurrentWindow == NULL )
+        if( fgStructure.CurrentWindow == nullptr )
             return 0;
 
         XTranslateCoordinates(
@@ -292,7 +292,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
     {
         XWindowAttributes winAttributes;
 
-        if( fgStructure.CurrentWindow == NULL )
+        if( fgStructure.CurrentWindow == nullptr )
             return 0;
         XGetWindowAttributes(
             fgDisplay.Display,
@@ -313,9 +313,9 @@ int FGAPIENTRY glutGet( GLenum eWhat )
         GLXFBConfig * fbconfig;
         int isPossible;
 
-        fbconfig = fgChooseFBConfig(NULL);
+        fbconfig = fgChooseFBConfig(nullptr);
 
-        if (fbconfig == NULL)
+        if (fbconfig == nullptr)
         {
             isPossible = 0;
         }
@@ -330,7 +330,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
 
     /* This is system-dependant */
     case GLUT_WINDOW_FORMAT_ID:
-        if( fgStructure.CurrentWindow == NULL )
+        if( fgStructure.CurrentWindow == nullptr )
             return 0;
 
         return fghGetConfig( GLX_VISUAL_ID );
@@ -449,7 +449,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
 
         RECT winRect;
 
-        freeglut_return_val_if_fail( fgStructure.CurrentWindow != NULL, 0 );
+        freeglut_return_val_if_fail( fgStructure.CurrentWindow != nullptr, 0 );
 
 #if defined(_WIN32_WCE)
         GetWindowRect( fgStructure.CurrentWindow->Window.Handle, &winRect );
@@ -537,7 +537,7 @@ int FGAPIENTRY glutGet( GLenum eWhat )
 
     case GLUT_WINDOW_FORMAT_ID:
 #if !defined(_WIN32_WCE)
-        if( fgStructure.CurrentWindow != NULL )
+        if( fgStructure.CurrentWindow != nullptr )
             return GetPixelFormat( fgStructure.CurrentWindow->Window.Device );
 #endif /* defined(_WIN32_WCE) */
         return 0;
@@ -546,22 +546,22 @@ int FGAPIENTRY glutGet( GLenum eWhat )
 
     /* The window structure queries */
     case GLUT_WINDOW_PARENT:
-        if( fgStructure.CurrentWindow         == NULL ) return 0;
-        if( fgStructure.CurrentWindow->Parent == NULL ) return 0;
+        if( fgStructure.CurrentWindow         == nullptr ) return 0;
+        if( fgStructure.CurrentWindow->Parent == nullptr ) return 0;
         return fgStructure.CurrentWindow->Parent->ID;
 
     case GLUT_WINDOW_NUM_CHILDREN:
-        if( fgStructure.CurrentWindow == NULL )
+        if( fgStructure.CurrentWindow == nullptr )
             return 0;
         return fgListLength( &fgStructure.CurrentWindow->Children );
 
     case GLUT_WINDOW_CURSOR:
-        if( fgStructure.CurrentWindow == NULL )
+        if( fgStructure.CurrentWindow == nullptr )
             return 0;
         return fgStructure.CurrentWindow->State.Cursor;
 
     case GLUT_MENU_NUM_ITEMS:
-        if( fgStructure.CurrentMenu == NULL )
+        if( fgStructure.CurrentMenu == nullptr )
             return 0;
         return fgListLength( &fgStructure.CurrentMenu->Entries );
 
@@ -633,7 +633,7 @@ int FGAPIENTRY glutDeviceGet( GLenum eWhat )
         return 1 ;
 
     case GLUT_NUM_MOUSE_BUTTONS:
-        /* We should be able to pass NULL when the last argument is zero,
+        /* We should be able to pass nullptr when the last argument is zero,
          * but at least one X server has a bug where this causes a segfault.
          *
          * In XFree86/Xorg servers, a mouse wheel is seen as two buttons
@@ -823,7 +823,7 @@ int * FGAPIENTRY glutGetModeValues(GLenum eWhat, int * size)
 
   FREEGLUT_EXIT_IF_NOT_INITIALISED("glutGetModeValues");
 
-  array = NULL;
+  array = nullptr;
   *size = 0;
 
   switch (eWhat)
@@ -874,7 +874,7 @@ int * FGAPIENTRY glutGetModeValues(GLenum eWhat, int * size)
                                         attributes,
                                         &fbconfigArraySize);
 
-      if (fbconfigArray != NULL)
+      if (fbconfigArray != nullptr)
         {
           int * temp_array;
           int previous_value;
